@@ -1,8 +1,11 @@
 
 tar xf olsrd-0.6.5.4.tar.bz2 ; cd olsrd-0.6.5.4
-patch -p1 < ../olsrd-0.6.5.4-android-quagga.patch
-patch -p1 < ../olsrd-0.6.5.4-android-conf_file_path.patch
-patch -p1 < ../olsrd-0.6.5.4-android-ndk_platform_level.patch
+
+Apply the following patches, available in this directory of this repository,
+through the "patch -p1 < ..." command:
+- olsrd-0.6.5.4-android-quagga.patch
+- olsrd-0.6.5.4-android-conf_file_path.patch
+- olsrd-0.6.5.4-android-ndk_platform_level.patch
 
 Set the STRIP environment variable as explained
 in 00_NOTES-env_for_cross_compiling.txt (in the root of the repository).
