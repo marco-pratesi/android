@@ -1,0 +1,11 @@
+diff -Nrup quagga-0.99.21mr2.2.orig/ospf6d/ospf6_mdr_smf.c quagga-0.99.21mr2.2/ospf6d/ospf6_mdr_smf.c
+--- quagga-0.99.21mr2.2.orig/ospf6d/ospf6_mdr_smf.c	2012-07-25 19:03:22.000000000 +0200
++++ quagga-0.99.21mr2.2/ospf6d/ospf6_mdr_smf.c	2013-01-18 16:26:40.011533626 +0100
+@@ -21,6 +21,7 @@
+  * Boston, MA 02111-1307, USA.
+  */
+ 
++#include <sys/socket.h>
+ #include <sys/un.h>
+ 
+ #include "zebra.h"
