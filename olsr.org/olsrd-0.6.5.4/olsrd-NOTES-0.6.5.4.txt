@@ -4,6 +4,9 @@ patch -p1 < ../olsrd-0.6.5.4-android-quagga.patch
 patch -p1 < ../olsrd-0.6.5.4-android-conf_file_path.patch
 patch -p1 < ../olsrd-0.6.5.4-android-ndk_platform_level.patch
 
+Set the STRIP environment variable as explained
+in 00_NOTES-env_for_cross_compiling.txt (in the root of the repository).
+
 make OS=android DEBUG=0 NDK_BASE=/opt/android-ndk
 $STRIP olsrd
 make OS=android DEBUG=0 NDK_BASE=/opt/android-ndk libs
