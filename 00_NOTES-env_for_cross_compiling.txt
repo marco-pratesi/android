@@ -1,0 +1,49 @@
+
+Targets: Android 4.0.x ICS and >= 4.1.x JB (Linux kernel version 3.x.y)
+Build platform: android-ndk-r8d/r8e on Linux Ubuntu 12.04.x x86
+
+Usage of the bash shell is assumed.
+
+Go to the /opt directory, extract android-ndk-r8e-linux-x86.tar.bz2
+and create a symbolic link:
+cd /opt
+wget http://dl.google.com/android/ndk/android-ndk-r8e-linux-x86.tar.bz2
+tar xf android-ndk-r8e-linux-x86.tar.bz2
+ln -sf android-ndk-r8e android-ndk
+
+Then set some environment variables for cross-compiling, as in the following.
+
+For Android-ARM platforms:
+--------------------------
+
+export NDK_BASE=/opt/android-ndk
+export CC="$NDK_BASE/toolchains/arm-linux-androideabi-4.6/prebuilt/linux-x86/bin/arm-linux-androideabi-gcc --sysroot=$NDK_BASE/platforms/android-14/arch-arm"
+export CXX="$NDK_BASE/toolchains/arm-linux-androideabi-4.6/prebuilt/linux-x86/bin/arm-linux-androideabi-g++ --sysroot=$NDK_BASE/platforms/android-14/arch-arm"
+export LD=$NDK_BASE/toolchains/arm-linux-androideabi-4.6/prebuilt/linux-x86/bin/arm-linux-androideabi-ld
+export AR=$NDK_BASE/toolchains/arm-linux-androideabi-4.6/prebuilt/linux-x86/bin/arm-linux-androideabi-ar
+export STRIP=$NDK_BASE/toolchains/arm-linux-androideabi-4.6/prebuilt/linux-x86/bin/arm-linux-androideabi-strip
+export OBJDUMP=$NDK_BASE/toolchains/arm-linux-androideabi-4.6/prebuilt/linux-x86/bin/arm-linux-androideabi-objdump
+export RANLIB=$NDK_BASE/toolchains/arm-linux-androideabi-4.6/prebuilt/linux-x86/bin/arm-linux-androideabi-ranlib
+
+You may want to use different settings: as an example, replace
+"arm-linux-androideabi-4.6" with "arm-linux-androideabi-4.4.3"
+if you want to cross-compile through gcc 4.4.3 instead of gcc 4.6.
+
+In most cases considered here, the build will continue with a "configure"
+command such as
+./configure --host=arm-linux ...
+
+For Android-x86 platforms:
+--------------------------
+
+export NDK_BASE=/opt/android-ndk
+export CC="$NDK_BASE/toolchains/x86-4.4.3/prebuilt/linux-x86/bin/i686-linux-android-gcc --sysroot=$NDK_BASE/platforms/android-14/arch-x86"
+export CXX="$NDK_BASE/toolchains/x86-4.4.3/prebuilt/linux-x86/bin/i686-linux-android-g++ --sysroot=$NDK_BASE/platforms/android-14/arch-x86"
+export LD=$NDK_BASE/toolchains/x86-4.4.3/prebuilt/linux-x86/bin/i686-linux-android-ld
+export AR=$NDK_BASE/toolchains/x86-4.4.3/prebuilt/linux-x86/bin/i686-linux-android-ar
+export STRIP=$NDK_BASE/toolchains/x86-4.4.3/prebuilt/linux-x86/bin/i686-linux-android-strip
+export OBJDUMP=$NDK_BASE/toolchains/x86-4.4.3/prebuilt/linux-x86/bin/i686-linux-android-objdump
+export RANLIB=$NDK_BASE/toolchains/x86-4.4.3/prebuilt/linux-x86/bin/i686-linux-android-ranlib
+
+./configure --host=i686-linux ...
+
