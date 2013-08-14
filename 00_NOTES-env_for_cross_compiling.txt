@@ -17,13 +17,15 @@ For Android-ARM platforms:
 --------------------------
 
 export NDK_BASE=/opt/android-ndk
-export CC="$NDK_BASE/toolchains/arm-linux-androideabi-4.6/prebuilt/linux-x86/bin/arm-linux-androideabi-gcc --sysroot=$NDK_BASE/platforms/android-14/arch-arm"
-export CXX="$NDK_BASE/toolchains/arm-linux-androideabi-4.6/prebuilt/linux-x86/bin/arm-linux-androideabi-g++ --sysroot=$NDK_BASE/platforms/android-14/arch-arm"
-export LD=$NDK_BASE/toolchains/arm-linux-androideabi-4.6/prebuilt/linux-x86/bin/arm-linux-androideabi-ld
-export AR=$NDK_BASE/toolchains/arm-linux-androideabi-4.6/prebuilt/linux-x86/bin/arm-linux-androideabi-ar
-export STRIP=$NDK_BASE/toolchains/arm-linux-androideabi-4.6/prebuilt/linux-x86/bin/arm-linux-androideabi-strip
-export OBJDUMP=$NDK_BASE/toolchains/arm-linux-androideabi-4.6/prebuilt/linux-x86/bin/arm-linux-androideabi-objdump
-export RANLIB=$NDK_BASE/toolchains/arm-linux-androideabi-4.6/prebuilt/linux-x86/bin/arm-linux-androideabi-ranlib
+export NDK_TOOLCHAIN=$NDK_BASE/toolchains/arm-linux-androideabi-4.6/prebuilt/linux-x86
+export NDK_SYSROOT=$NDK_BASE/platforms/android-14/arch-arm
+export CC="$NDK_TOOLCHAIN/bin/arm-linux-androideabi-gcc --sysroot=$NDK_SYSROOT"
+export CXX="$NDK_TOOLCHAIN/bin/arm-linux-androideabi-g++ --sysroot=$NDK_SYSROOT"
+export LD=$NDK_TOOLCHAIN/bin/arm-linux-androideabi-ld
+export AR=$NDK_TOOLCHAIN/bin/arm-linux-androideabi-ar
+export STRIP=$NDK_TOOLCHAIN/bin/arm-linux-androideabi-strip
+export OBJDUMP=$NDK_TOOLCHAIN/bin/arm-linux-androideabi-objdump
+export RANLIB=$NDK_TOOLCHAIN/bin/arm-linux-androideabi-ranlib
 
 You may want to use different settings: as an example, replace
 "arm-linux-androideabi-4.6" with "arm-linux-androideabi-4.4.3"
@@ -37,13 +39,15 @@ For Android-x86 platforms:
 --------------------------
 
 export NDK_BASE=/opt/android-ndk
-export CC="$NDK_BASE/toolchains/x86-4.4.3/prebuilt/linux-x86/bin/i686-linux-android-gcc --sysroot=$NDK_BASE/platforms/android-14/arch-x86"
-export CXX="$NDK_BASE/toolchains/x86-4.4.3/prebuilt/linux-x86/bin/i686-linux-android-g++ --sysroot=$NDK_BASE/platforms/android-14/arch-x86"
-export LD=$NDK_BASE/toolchains/x86-4.4.3/prebuilt/linux-x86/bin/i686-linux-android-ld
-export AR=$NDK_BASE/toolchains/x86-4.4.3/prebuilt/linux-x86/bin/i686-linux-android-ar
-export STRIP=$NDK_BASE/toolchains/x86-4.4.3/prebuilt/linux-x86/bin/i686-linux-android-strip
-export OBJDUMP=$NDK_BASE/toolchains/x86-4.4.3/prebuilt/linux-x86/bin/i686-linux-android-objdump
-export RANLIB=$NDK_BASE/toolchains/x86-4.4.3/prebuilt/linux-x86/bin/i686-linux-android-ranlib
+export NDK_TOOLCHAIN=$NDK_BASE/toolchains/x86-4.4.3/prebuilt/linux-x86
+export NDK_SYSROOT=$NDK_BASE/platforms/android-14/arch-x86
+export CC="$NDK_TOOLCHAIN/bin/i686-linux-android-gcc --sysroot=$NDK_SYSROOT"
+export CXX="$NDK_TOOLCHAIN/bin/i686-linux-android-g++ --sysroot=$NDK_SYSROOT"
+export LD=$NDK_TOOLCHAIN/bin/i686-linux-android-ld
+export AR=$NDK_TOOLCHAIN/bin/i686-linux-android-ar
+export STRIP=$NDK_TOOLCHAIN/bin/i686-linux-android-strip
+export OBJDUMP=$NDK_TOOLCHAIN/bin/i686-linux-android-objdump
+export RANLIB=$NDK_TOOLCHAIN/bin/i686-linux-android-ranlib
 
 ./configure --host=i686-linux ...
 
