@@ -1,0 +1,43 @@
+
+Set the needed environment variables as explained
+in 00_NOTES-env_for_cross_compiling.txt (in the root of the repository).
+
+tar xf quagga-0.99.22.1.tar.gz ; cd quagga-0.99.22.1
+patch -p1 < ../quagga-0.99.21-android.patch
+# Taken from olsrd-0.6.5.4/lib/quagga/patches :
+patch -p1 < quagga-0.99.21.diff
+
+./configure --host=arm-linux \
+ --disable-bgpd \
+ --disable-ripd \
+ --disable-ripngd \
+ --disable-isisd \
+ --enable-ipv6 \
+ --disable-vtysh \
+ --disable-shared \
+ --enable-static \
+ --enable-user=root \
+ --enable-group=root \
+ --enable-vty-group=root \
+ --prefix=/foobar \
+ --bindir=/system/xbin \
+ --sbindir=/system/xbin \
+ --libexecdir=/system/xbin \
+ --sysconfdir=/data/system/etc/quagga \
+ --localstatedir=/data/system/var/run/quagga
+
+make -e
+rm -rf /data /system
+make install
+$STRIP /system/xbin/*
+mkdir -p /data/system/etc/quagga
+# Put configuration files in /data/system/etc/quagga
+( cd /data/system/etc/quagga ; touch zebra.conf ospfd.conf ospf6d.conf babeld.conf )
+( cd /data/system/etc/quagga ; chown root.root * ; chmod 644 * )
+mkdir -p /data/system/var/run/quagga
+chown root.root /data/system/var/run/quagga
+chmod 755 /data/system/var/run/quagga
+tar cvf quagga-0.99.22.1-arm.tar /data /system
+
+To install, just extract in the root directory ("/") of the target device.
+

@@ -1,0 +1,56 @@
+diff -Nrup quagga-0.99.21.orig/lib/command.c quagga-0.99.21/lib/command.c
+--- quagga-0.99.21.orig/lib/command.c   2012-05-01 21:40:13.000000000 +0200
++++ quagga-0.99.21/lib/command.c        2013-01-18 16:23:51.174696395 +0100
+@@ -522,7 +522,6 @@ zencrypt (const char *passwd)
+ {
+   char salt[6];
+   struct timeval tv;
+-  char *crypt (const char *, const char *);
+
+   gettimeofday(&tv,0);
+
+@@ -530,7 +529,7 @@ zencrypt (const char *passwd)
+   to64(&salt[3], tv.tv_usec, 3);
+   salt[5] = '\0';
+
+-  return crypt (passwd, salt);
++  return passwd;
+ }
+
+ /* This function write configuration of this host. */
+diff -Nrup quagga-0.99.21.orig/lib/vty.c quagga-0.99.21/lib/vty.c
+--- quagga-0.99.21.orig/lib/vty.c       2012-05-01 21:40:13.000000000 +0200
++++ quagga-0.99.21/lib/vty.c    2013-01-18 16:23:51.178696413 +0100
+@@ -334,7 +334,6 @@ vty_auth (struct vty *vty, char *buf)
+   char *passwd = NULL;
+   enum node_type next_node = 0;
+   int fail;
+-  char *crypt (const char *, const char *);
+
+   switch (vty->node)
+     {
+@@ -358,12 +357,7 @@ vty_auth (struct vty *vty, char *buf)
+     }
+
+   if (passwd)
+-    {
+-      if (host.encrypt)
+-	fail = strcmp (crypt(buf, passwd), passwd);
+-      else
+	fail = strcmp (buf, passwd);
+-    }
+   else
+     fail = 1;
+
+diff -Nrup quagga-0.99.21.orig/lib/zebra.h quagga-0.99.21/lib/zebra.h
+--- quagga-0.99.21.orig/lib/zebra.h     2012-05-01 21:40:13.000000000 +0200
++++ quagga-0.99.21/lib/zebra.h  2013-01-18 16:23:51.190696483 +0100
+@@ -50,7 +50,7 @@ typedef int socklen_t;
+ #ifdef HAVE_STROPTS_H
+ #include <stropts.h>
+ #endif /* HAVE_STROPTS_H */
+-#include <sys/fcntl.h>
++#include <fcntl.h>
+ #ifdef HAVE_SYS_SELECT_H
+ #include <sys/select.h>
+ #endif /* HAVE_SYS_SELECT_H */
