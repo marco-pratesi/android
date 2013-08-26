@@ -1,0 +1,28 @@
+diff -Nrup picocom-1.7.orig/Makefile picocom-1.7/Makefile
+--- picocom-1.7.orig/Makefile	2012-02-21 06:42:24.000000000 +0100
++++ picocom-1.7/Makefile	2013-08-25 08:10:47.267620711 +0200
+@@ -1,7 +1,7 @@
+ 
+ VERSION=1.7
+ 
+-UUCP_LOCK_DIR=/var/lock
++UUCP_LOCK_DIR=/data/system/var/lock
+ 
+ # CC = gcc
+ CPPFLAGS=-DVERSION_STR=\"$(VERSION)\" \
+diff -Nrup picocom-1.7.orig/term.c picocom-1.7/term.c
+--- picocom-1.7.orig/term.c	2010-05-29 00:41:19.000000000 +0200
++++ picocom-1.7/term.c	2013-08-25 08:13:03.852297522 +0200
+@@ -1121,7 +1121,12 @@ term_drain(int fd)
+ 		}
+ 
+ 		do {
++#ifdef __BIONIC__
++/* Reference: http://dan.drown.org/android/src/gdb/no-tcdrain */
++			r = ioctl(fd, TCSBRK, 1);
++#else
+ 			r = tcdrain(fd);
++#endif
+ 		} while ( r < 0 && errno == EINTR);
+ 		if ( r < 0 ) {
+ 			term_errno = TERM_EDRAIN;

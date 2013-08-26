@@ -1,0 +1,16 @@
+
+Set the needed environment variables as explained
+in 00_NOTES-env_for_cross_compiling.txt (in the root of the repository).
+
+You can find the source code at http://code.google.com/p/picocom/
+tar xf picocom-1.7.tar.gz ; cd picocom-1.7
+Apply picocom-1.7-android.patch through the "patch -p1 < ..." command.
+make -e
+$STRIP picocom
+MANWIDTH=70 man ./picocom.8 > picocom.8.txt
+
+On the target system:
+- Put the picocom executable and picocom.8.txt where it is convenient to you.
+  (Remember to chmod the executable.)
+- Create the UUCP_LOCK_DIR according to picocom-1.7-android.patch
+
