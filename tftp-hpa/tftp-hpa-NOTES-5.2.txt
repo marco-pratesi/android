@@ -1,0 +1,36 @@
+
+This build procedure uses /usr/include/arpa/tftp.h from glibc (included
+by config.h); hence, on Ubuntu 12.04, it requires the libc6-dev package.
+Awful, but simple, and it works.
+
+Set the needed environment variables as explained
+in 00_NOTES-env_for_cross_compiling.txt (in the root of the repository).
+
+wget https://www.kernel.org/pub/software/network/tftp/tftp-hpa/tftp-hpa-5.2.tar.gz
+tar xf tftp-hpa-5.2.tar.gz ; cd tftp-hpa-5.2
+Apply tftp-hpa-5.2-android.patch through the "patch -p1 < ..." command.
+./configure --host=arm-linux
+# It does the same as
+# ./configure --host=arm-linux \
+#   --with-ipv6 --without-tcpwrappers --without-readline --without-remap
+# Do *not* "make -e":
+make
+$STRIP tftp/tftp tftpd/tftpd
+MANWIDTH=70 man tftp/tftp.1 > tftp/tftp.1.txt
+MANWIDTH=70 man tftpd/tftpd.8 > tftpd/tftpd.8.txt
+
+NOTE: if you want to use "make -e" instead of "make", then unset
+the environment variable AR:
+unset AR
+
+Usually, rooted Android systems provide busybox with tftp and tftpd applets
+enabled: very likely, on the target system, /system/xbin/tftp
+and /system/xbin/tftpd are symbolic links to /system/xbin/busybox.
+Hence, to avoid troubles, I suggest to rename, adding the -hpa suffix:
+( cd tftp ; mv tftp tftp-hpa ; mv tftp.1.txt tftp-hpa.1.txt )
+( cd tftpd ; mv tftpd tftpd-hpa ; mv tftpd.8.txt tftpd-hpa.8.txt )
+
+On the target system, put executables (tftp/tftp-hpa and tftpd/tftpd-hpa)
+and docs (tftp/tftp-hpa.1.txt and tftpd/tftpd-hpa.8.txt) where it is
+convenient to you.  (Remember to chmod executables.)
+
