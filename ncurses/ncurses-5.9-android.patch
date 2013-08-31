@@ -1,0 +1,21 @@
+diff -Nrup ncurses-5.9.orig/form/fty_num.c ncurses-5.9/form/fty_num.c
+--- ncurses-5.9.orig/form/fty_num.c	2010-01-23 22:14:36.000000000 +0100
++++ ncurses-5.9/form/fty_num.c	2013-08-30 17:12:04.953720863 +0200
+@@ -40,7 +40,7 @@ MODULE_ID("$Id: fty_num.c,v 1.28 2010/01
+ #include <locale.h>
+ #endif
+ 
+-#if HAVE_LOCALE_H
++#if HAVE_LOCALE_H && !defined(__BIONIC__)
+ #define isDecimalPoint(c) ((c) == ((L && L->decimal_point) ? *(L->decimal_point) : '.'))
+ #else
+ #define isDecimalPoint(c) ((c) == '.')
+@@ -96,7 +96,7 @@ Generic_This_Type(void *arg)
+ 	  argn->low = args->low;
+ 	  argn->high = args->high;
+ 
+-#if HAVE_LOCALE_H
++#if HAVE_LOCALE_H && !defined(__BIONIC__)
+ 	  argn->L = localeconv();
+ #else
+ 	  argn->L = NULL;
