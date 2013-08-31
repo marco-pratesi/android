@@ -1,0 +1,111 @@
+
+Set the needed environment variables as explained
+in 00_NOTES-env_for_cross_compiling.txt (in the root of the repository).
+
+The ncurses library is needed, hence, according to the corresponding
+documentation in this repository:
+- on the build system, build ncurses, following instructions at least
+  until the "make install" step
+- on the target system, install the ncurses package
+
+Furthermore, "vimdiff" requires diffutils (see detailed notes at the end
+of this document), hence, on the target system, install the diffutils package,
+according to the corresponding documentation in this repository.
+
+To match directories where ncurses-5.9 has been "cross-installed":
+export LDFLAGS=-L/system/lib
+export CPPFLAGS=-I/foobar/include/ncurses
+
+wget ftp://ftp.vim.org/pub/vim/unix/vim-7.4.tar.bz2
+tar xf vim-7.4.tar.bz2 ; cd vim74
+
+A configure problem may arise with cross-compilation of version 7.3.
+References:
+https://groups.google.com/forum/?fromgroups=#!topic/vim_dev/ZsAu_RUjVUs
+http://code.google.com/p/vim/issues/detail?id=25
+To cope with this, you may apply vim-7.3-android.patch through the
+"patch -p1 < ..." command; however, this patch is not needed with
+recent enough 7.3.x versions and with version 7.4.
+
+Apply vim-7.4-android.patch through the "patch -p1 < ..." command.
+
+vim_cv_toupper_broken=yes \
+vim_cv_terminfo=yes \
+vim_cv_tty_group=shell \
+vim_cv_tty_mode=0620 \
+vim_cv_getcwd_broken=yes \
+vim_cv_stat_ignores_slash=yes \
+vim_cv_memmove_handles_overlap=yes \
+./configure \
+ --host=arm-linux \
+ --with-tlib=ncurses \
+ --prefix=/foobar \
+ --bindir=/system/xbin \
+ --datarootdir=/system/usr/share \
+ --mandir=/foobar/man
+
+make
+make install
+$STRIP /system/xbin/*
+
+rm -rf /sdcard ; mkdir -p /sdcard/tmp
+
+Create /system/usr/share/vim/vimrc according to your needs/preferences;
+you may want to create it as an empty file:
+touch /system/usr/share/vim/vimrc
+(I'm providing my favourite vimrc for Android: vimrc-android.)
+chown root.root /system/usr/share/vim/vimrc
+chmod 644 /system/usr/share/vim/vimrc
+
+tar cvf vim-7.4-arm.tar \
+  /system/xbin/ex \
+  /system/xbin/rview \
+  /system/xbin/rvim \
+  /system/xbin/view \
+  /system/xbin/vim \
+  /system/xbin/vimdiff \
+  /system/xbin/vimtutor \
+  /system/xbin/xxd \
+  /system/usr/share/vim \
+  /sdcard/tmp
+
+Care is needed to install on the target system, as another version of VIM
+may be preinstalled: as an example, on Cyanogenmod 10.1.x for Nexus 7,
+there is VIM 7.2 (however, I prefer my build, mainly due to the usability
+improvements provided by my patch, and because it is a newer version).
+You may have to rename some files/dirs to avoid collisions and/or confusion:
+as an example, this is what I did on Cyanogenmod 10.1.x for Nexus 7:
+mount -o remount,rw /system
+mv /system/xbin/vim /system/xbin/vim72.orig
+mv /system/usr/share/vim /system/usr/share/vim72.orig
+mount -o remount,ro /system
+Anyway, please remember that there are so many different Android
+versions/devices, hence I just can't know all possible setups: please,
+carefully investigate your system before installing this package; if you get
+in troubles, you are on your own, I do not take any responsibility for this.
+
+To install, perform the following steps on the target device:
+- temporarily remount /system as read/write:
+  mount -o remount,rw /system
+- if you installed a previous version, then carefully remove it, as Android
+  will not overwrite old files with new ones
+- extract the package in the root directory ("/"): as an example,
+  put it in the /sdcard dir of the target system, then
+  cd /
+  tar xvf /sdcard/vim-7.4-arm.tar
+- remount /system as read-only:
+  mount -o remount,ro /system
+
+------------------------------
+Why vimdiff requires diffutils
+------------------------------
+:help vimdiff
+==> [...] This only works when a standard "diff" command is available. [...]
+man busybox
+==> "diff" section ==> This implementation supports unified diffs only.
+man diff
+==> To realize that the default ("standard") diff and a unified diff
+     are not the same.
+Conclusion: for vimdiff to be useful, replace the busybox diff
+with diff from diffutils.
+

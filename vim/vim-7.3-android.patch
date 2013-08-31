@@ -1,0 +1,12 @@
+diff -Nrup vim73.orig/src/auto/configure vim73/src/auto/configure
+--- vim73.orig/src/auto/configure	2010-08-13 16:17:15.000000000 +0200
++++ vim73/src/auto/configure	2013-01-09 16:45:18.299883000 +0100
+@@ -11642,7 +11642,7 @@ _ACEOF
+ { $as_echo "$as_me:${as_lineno-$LINENO}: checking uint32_t is 32 bits" >&5
+ $as_echo_n "checking uint32_t is 32 bits... " >&6; }
+ if test "$cross_compiling" = yes; then :
+-  as_fn_error "could not compile program using uint32_t." "$LINENO" 5
++  as_echo "could not check when cross-compiling" "$LINENO" 5
+ else
+   cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+ /* end confdefs.h.  */
