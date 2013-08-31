@@ -1,0 +1,62 @@
+
+Set the needed environment variables as explained
+in 00_NOTES-env_for_cross_compiling.txt (in the root of the repository).
+
+On the build system, remove directory trees /foobar and /system,
+if they are present due to previous builds.
+
+wget http://ftp.gnu.org/gnu/diffutils/diffutils-3.3.tar.xz
+tar xf diffutils-3.3.tar.xz ; cd diffutils-3.3
+
+Depending on the version of NDK, you may need to apply the hunks
+in diffutils-3.2-android.patch, in particular the one involving localeconv().
+It seems that no patch is needed if NDK r9 is used.
+
+./configure \
+ --host=arm-linux \
+ --prefix=/foobar \
+ --bindir=/system/xbin \
+ --libdir=/system/lib \
+ --mandir=/foobar/man
+# Do *not* "make -e"
+make
+make install
+$STRIP /system/xbin/*
+tar cvf diffutils-3.3-arm.tar /system/xbin
+( Expected output:
+  # tar cvf diffutils-3.3-arm.tar /system/xbin
+  tar: Removing leading `/' from member names
+  /system/xbin/
+  /system/xbin/diff3
+  /system/xbin/sdiff
+  /system/xbin/diff
+  /system/xbin/cmp
+)
+
+On the build system, remove directory trees /foobar and /system.
+
+Care is needed to install on the target system, as, very likely, at least
+a simpler version of the diff utility is preinstalled.
+AFAIK, usually, to avoid collisions, you only need to:
+- rename a symbolic link to /system/bin/toolbox
+  mv /system/bin/cmp /system/bin/cmp.toolbox
+- rename two symbolic links to /system/xbin/busybox
+  mv /system/xbin/cmp /system/xbin/cmp.busybox
+  mv /system/xbin/diff /system/xbin/diff.busybox
+Anyway, please remember that there are so many different Android
+versions/devices, hence I just can't know all possible setups: please,
+carefully investigate your system before installing this package; if you get
+in troubles, you are on your own, I do not take any responsibility for this.
+
+To install, perform the following steps on the target device:
+- temporarily remount /system as read/write:
+  mount -o remount,rw /system
+- if you installed a previous version, then carefully remove it, as Android
+  will not overwrite old files with new ones
+- extract the package in the root directory ("/"): as an example,
+  put it in the /sdcard dir of the target system, then
+  cd /
+  tar xvf /sdcard/diffutils-3.3-arm.tar
+- remount /system as read-only:
+  mount -o remount,ro /system
+

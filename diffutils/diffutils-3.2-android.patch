@@ -1,0 +1,26 @@
+diff -Nrup diffutils-3.2.orig/lib/config.hin diffutils-3.2/lib/config.hin
+--- diffutils-3.2.orig/lib/config.hin	2011-09-02 14:32:24.000000000 +0200
++++ diffutils-3.2/lib/config.hin	2013-01-10 00:43:34.000000000 +0100
+@@ -1,5 +1,7 @@
+ /* lib/config.hin.  Generated from configure.ac by autoheader.  */
+ 
++#include <time.h>
++
+ /* Define to the number of bits in type 'ptrdiff_t'. */
+ #undef BITSIZEOF_PTRDIFF_T
+ 
+diff -Nrup diffutils-3.2.orig/lib/nl_langinfo.c diffutils-3.2/lib/nl_langinfo.c
+--- diffutils-3.2.orig/lib/nl_langinfo.c	2011-01-03 22:04:38.000000000 +0100
++++ diffutils-3.2/lib/nl_langinfo.c	2013-01-10 00:56:53.224472090 +0100
+@@ -152,9 +152,9 @@ nl_langinfo (nl_item item)
+ # endif
+     /* nl_langinfo items of the LC_NUMERIC category */
+     case RADIXCHAR:
+-      return localeconv () ->decimal_point;
++      return (char *) '.';
+     case THOUSEP:
+-      return localeconv () ->thousands_sep;
++      return (char *) ',';
+     /* nl_langinfo items of the LC_TIME category.
+        TODO: Really use the locale.  */
+     case D_T_FMT:
