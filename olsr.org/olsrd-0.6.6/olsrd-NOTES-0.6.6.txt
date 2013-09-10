@@ -1,0 +1,34 @@
+
+Build performed on Linux Ubuntu 12.04.x using GCC 4.8 of Android NDK r9.
+
+tar xf olsrd-0.6.6.tar.bz2 ; cd olsrd-0.6.6
+
+Apply the following patches, available in this directory of this repository,
+through the "patch -p1 < ..." command:
+- olsrd-0.6.6-android-quagga.patch
+- olsrd-0.6.6-android-conf_file_path.patch
+- olsrd-0.6.6-android-ndk_platform_level.patch
+
+Set the STRIP environment variable as explained
+in 00_NOTES-env_for_cross_compiling.txt (in the root of the repository).
+
+make OS=android DEBUG=0 NDK_BASE=/opt/android-ndk
+$STRIP olsrd
+make OS=android DEBUG=0 NDK_BASE=/opt/android-ndk libs
+$STRIP --strip-unneeded lib/quagga/olsrd_quagga.so.0.2.2
+$STRIP --strip-unneeded lib/txtinfo/olsrd_txtinfo.so.0.1
+
+rm -rf data system
+mkdir -p data/system/etc/olsrd system/lib system/xbin
+cp olsrd system/xbin/
+cp lib/quagga/olsrd_quagga.so.0.2.2 lib/txtinfo/olsrd_txtinfo.so.0.1 system/lib/
+# Put olsrd.conf in data/system/etc/olsrd
+touch data/system/etc/olsrd/olsrd.conf
+chown -R root.root data system
+chmod 644 data/system/etc/olsrd/olsrd.conf
+chmod 755 system/xbin/olsrd system/lib/olsrd_quagga.so.0.2.2 \
+  system/lib/olsrd_txtinfo.so.0.1
+tar cvf olsrd-0.6.6-arm.tar data system
+
+To install, just extract in the root directory ("/") of the target device.
+

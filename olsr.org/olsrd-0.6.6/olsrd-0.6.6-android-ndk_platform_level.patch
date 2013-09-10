@@ -1,0 +1,12 @@
+diff -Nrup olsrd-0.6.6.orig/make/Makefile.android olsrd-0.6.6/make/Makefile.android
+--- olsrd-0.6.6.orig/make/Makefile.android	2013-08-17 11:03:40.000000000 +0200
++++ olsrd-0.6.6/make/Makefile.android	2013-09-10 17:50:20.657006009 +0200
+@@ -95,7 +95,7 @@ UNINSTALL_LIB =	rm -f $(LIBDIR)/$(PLUGIN
+ # Android NDK setup
+ HOST = arm-linux-androideabi
+ NDK_BASE ?= /opt/android-ndk
+-NDK_PLATFORM_LEVEL ?= 4
++NDK_PLATFORM_LEVEL ?= 14
+ NDK_ABI=arm
+ NDK_SYSROOT=$(NDK_BASE)/platforms/android-$(NDK_PLATFORM_LEVEL)/arch-$(NDK_ABI)
+ NDK_UNAME=$(shell uname -s | tr '[A-Z]' '[a-z]')

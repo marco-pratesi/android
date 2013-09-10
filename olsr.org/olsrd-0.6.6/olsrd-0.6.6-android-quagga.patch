@@ -1,0 +1,25 @@
+diff -Nrup olsrd-0.6.6.orig/Makefile olsrd-0.6.6/Makefile
+--- olsrd-0.6.6.orig/Makefile	2013-08-17 11:03:40.000000000 +0200
++++ olsrd-0.6.6/Makefile	2013-09-10 17:51:49.425446199 +0200
+@@ -203,7 +203,8 @@ ifeq ($(OS),win32)
+ SUBDIRS := dot_draw httpinfo jsoninfo mini pgraph secure txtinfo
+ else
+ ifeq ($(OS),android)
+-SUBDIRS := arprefresh bmf dot_draw dyn_gw dyn_gw_plain httpinfo jsoninfo mdns mini nameservice p2pd pgraph pud secure sgwdynspeed txtinfo watchdog
++#SUBDIRS := arprefresh bmf dot_draw dyn_gw dyn_gw_plain httpinfo jsoninfo mdns mini nameservice p2pd pgraph pud quagga secure sgwdynspeed txtinfo watchdog
++SUBDIRS := quagga txtinfo
+ else
+ SUBDIRS := dot_draw httpinfo jsoninfo mini nameservice pgraph secure txtinfo watchdog
+ endif
+diff -Nrup olsrd-0.6.6.orig/lib/quagga/src/quagga.h olsrd-0.6.6/lib/quagga/src/quagga.h
+--- olsrd-0.6.6.orig/lib/quagga/src/quagga.h	2013-08-17 11:03:40.000000000 +0200
++++ olsrd-0.6.6/lib/quagga/src/quagga.h	2013-09-10 17:52:41.965706738 +0200
+@@ -21,7 +21,7 @@
+ 
+ /* Zebra socket */
+ #ifndef ZEBRA_SOCKPATH
+-#define ZEBRA_SOCKPATH "/var/run/quagga/zserv.api"
++#define ZEBRA_SOCKPATH "/data/system/var/run/quagga/zserv.api"
+ #endif /* ZEBRA_SOCKPATH */
+ 
+ /* Quagga plugin flags */

@@ -1,0 +1,24 @@
+diff -Nrup olsrd-0.6.6.orig/Makefile.inc olsrd-0.6.6/Makefile.inc
+--- olsrd-0.6.6.orig/Makefile.inc	2013-08-17 11:03:40.000000000 +0200
++++ olsrd-0.6.6/Makefile.inc	2013-09-10 17:48:27.920446964 +0200
+@@ -67,7 +67,7 @@ DOCDIR   ?= $(SHAREDIR)/doc
+ MANDIR   ?= $(SHAREDIR)/man
+ EXENAME  ?= olsrd
+ CFGNAME  ?= $(EXENAME).conf
+-CFGFILE  ?= $(ETCDIR)/$(CFGNAME)
++CFGFILE  ?= /data/system/etc/olsrd/olsrd.conf
+ SGW_POLICY_SCRIPT ?= sgw_policy_routing_setup.sh
+ 
+ DOCDIR_OLSRD ?= $(DOCDIR)/$(EXENAME)
+diff -Nrup olsrd-0.6.6.orig/src/defs.h olsrd-0.6.6/src/defs.h
+--- olsrd-0.6.6.orig/src/defs.h	2013-08-17 11:03:40.000000000 +0200
++++ olsrd-0.6.6/src/defs.h	2013-09-10 17:49:17.604693371 +0200
+@@ -58,7 +58,7 @@
+ 
+ #ifndef OLSRD_GLOBAL_CONF_FILE
+ #define OLSRD_CONF_FILE_NAME	"olsrd.conf"
+-#define OLSRD_GLOBAL_CONF_FILE	"/etc/" OLSRD_CONF_FILE_NAME
++#define OLSRD_GLOBAL_CONF_FILE	"/data/system/etc/olsrd/" OLSRD_CONF_FILE_NAME
+ #endif /* OLSRD_GLOBAL_CONF_FILE */
+ 
+ #define	MAXMESSAGESIZE		1500    /* max broadcast size */
