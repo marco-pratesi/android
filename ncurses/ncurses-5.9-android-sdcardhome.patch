@@ -1,0 +1,88 @@
+diff -Nrup ncurses-5.9.orig/include/tic.h ncurses-5.9/include/tic.h
+--- ncurses-5.9.orig/include/tic.h	2009-08-08 19:52:46.000000000 +0200
++++ ncurses-5.9/include/tic.h	2013-09-07 09:46:25.846277446 +0200
+@@ -339,6 +339,9 @@ extern NCURSES_EXPORT(void) _nc_last_db(
+ /* write_entry.c */
+ extern NCURSES_EXPORT(int) _nc_tic_written (void);
+ 
++/* sdcardhome.c */
++char *sdcardhome();
++
+ #ifdef __cplusplus
+ }
+ #endif
+diff -Nrup ncurses-5.9.orig/ncurses/modules ncurses-5.9/ncurses/modules
+--- ncurses-5.9.orig/ncurses/modules	2010-08-07 20:41:02.000000000 +0200
++++ ncurses-5.9/ncurses/modules	2013-09-07 08:46:00.172298593 +0200
+@@ -201,6 +201,7 @@ name_match	lib		$(tinfo)	$(HEADER_DEPS)
+ names		lib		.		$(HEADER_DEPS)
+ read_entry	lib		$(tinfo)	$(HEADER_DEPS)	$(INCDIR)/tic.h $(INCDIR)/hashed_db.h
+ read_termcap	lib		$(tinfo)	$(HEADER_DEPS)	$(INCDIR)/tic.h
++sdcardhome	lib		$(tinfo)	$(HEADER_DEPS)
+ setbuf		lib		$(tinfo)	$(HEADER_DEPS)
+ strings		lib		$(tinfo)	$(HEADER_DEPS)
+ trace_buf	lib		$(trace)	$(HEADER_DEPS)
+diff -Nrup ncurses-5.9.orig/ncurses/tinfo/home_terminfo.c ncurses-5.9/ncurses/tinfo/home_terminfo.c
+--- ncurses-5.9.orig/ncurses/tinfo/home_terminfo.c	2010-12-26 00:43:58.000000000 +0100
++++ ncurses-5.9/ncurses/tinfo/home_terminfo.c	2013-09-07 09:04:43.273867863 +0200
+@@ -52,7 +52,7 @@ _nc_home_terminfo(void)
+ 
+     if (use_terminfo_vars()) {
+ 	if (MyBuffer == 0) {
+-	    if ((home = getenv("HOME")) != 0) {
++	    if ((home = sdcardhome()) != 0) {
+ 		size_t want = (strlen(home) + sizeof(PRIVATE_INFO));
+ 		MyBuffer = typeMalloc(char, want);
+ 		if (MyBuffer == 0)
+diff -Nrup ncurses-5.9.orig/ncurses/tinfo/read_termcap.c ncurses-5.9/ncurses/tinfo/read_termcap.c
+--- ncurses-5.9.orig/ncurses/tinfo/read_termcap.c	2010-01-23 18:57:43.000000000 +0100
++++ ncurses-5.9/ncurses/tinfo/read_termcap.c	2013-09-07 09:00:43.176677278 +0200
+@@ -809,7 +809,7 @@ _nc_tgetent(char *bp, char **sourcename,
+ 	} else {
+ 	    char temp[PBUFSIZ];
+ 	    temp[0] = 0;
+-	    if ((home = getenv("HOME")) != 0 && *home != '\0'
++	    if ((home = sdcardhome() != 0 && *home != '\0'
+ 		&& strchr(home, ' ') == 0
+ 		&& strlen(home) < sizeof(temp) - 10) {	/* setup path */
+ 		sprintf(temp, "%s/", home);	/* $HOME first */
+@@ -1046,7 +1046,7 @@ _nc_read_termcap_entry(const char *const
+ 
+ #define PRIVATE_CAP "%s/.termcap"
+ 
+-	if (use_terminfo_vars() && (h = getenv("HOME")) != NULL && *h != '\0'
++	if (use_terminfo_vars() && (h = sdcardhome() != NULL && *h != '\0'
+ 	    && (strlen(h) + sizeof(PRIVATE_CAP)) < PATH_MAX) {
+ 	    /* user's .termcap, if any, should override it */
+ 	    (void) strcpy(envhome, h);
+diff -Nrup ncurses-5.9.orig/ncurses/tinfo/sdcardhome.c ncurses-5.9/ncurses/tinfo/sdcardhome.c
+--- ncurses-5.9.orig/ncurses/tinfo/sdcardhome.c	1970-01-01 01:00:00.000000000 +0100
++++ ncurses-5.9/ncurses/tinfo/sdcardhome.c	2013-09-16 14:52:07.665811983 +0200
+@@ -0,0 +1,27 @@
++
++#include <sys/param.h>
++#include <sys/types.h>
++#include <pwd.h>
++#include <stdio.h>
++#include <sys/stat.h>
++//#include <stdlib.h>
++
++char *sdcardhome()
++{
++    static int sdcardhome_set = 0;
++    //char sdcardhome[MAXPATHLEN];
++    static char sdcardhome[MAXPATHLEN];
++    struct passwd *pwd;
++
++    if (!sdcardhome_set) {
++        pwd = getpwuid(getuid());
++        snprintf(sdcardhome, MAXPATHLEN, "/sdcard/%s", pwd->pw_name);
++        mkdir((const char *) sdcardhome, 0700);
++        //setenv("HOME", sdcardhome, 1);
++        sdcardhome_set = 1;
++    }
++
++    //return getenv("HOME");
++    return sdcardhome;
++}
++
