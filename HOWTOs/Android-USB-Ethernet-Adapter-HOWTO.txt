@@ -1,0 +1,84 @@
+
+***************************************************************************
+HOWTO setup an Ethernet wired connection on Android using a USB-LAN adapter
+***************************************************************************
+
+----------
+Disclaimer
+----------
+
+This HOWTO assumes usage of root privileges, i.e. that your device is rooted.
+It is also assumed that you are able to use a root shell on a Terminal Emulator
+on Android: its usage is implicitly assumed (and is never explicitly cited).
+Rooting your Android device might void your warranty, damage it,
+kill your cat, burn your house, and cause many other dreadful things.
+I do not take any responsibility, you are completely on your own.
+If you don't know what "rooting Android" means, this HOWTO is not suited
+for you.
+
+-------------------
+Scope of this HOWTO
+-------------------
+
+In some situations, you may want to use a wired Ethernet connection on your
+tablet/smartphone: as an example,
+- when it is the only networking option
+- when it is faster/more reliable than the available wireless options
+- when you want to directly connect to another device
+With reference to the last point: as an example, you may want to use
+a mobile device to backup a Cisco router/switch
+(read Android-USB-Serial-Connection-HOWTO.txt as an example).
+This document assumes you want to use a USB-LAN adapter for this purpose.
+
+--------------------------------------------------------
+Requirement: a USB port with USB OTG (On The Go) support
+--------------------------------------------------------
+
+To use the USB-LAN adapter on your tablet/smartphone, you need hardware
+and software support of USB OTG.
+Refer to Android-USB-Serial-Connection-HOWTO.txt for this topic.
+
+--------------------------------------------------
+Build a kernel module to drive the USB-LAN adapter
+--------------------------------------------------
+
+If you already use the adapter on GNU/Linux, very likely you can use is
+on Android, too, as Android is based on the Linux kernel.
+Check which kernel module drives your adapter on GNU/Linux, then
+refer to Android-Building-Kernel-Modules-HOWTO.txt for compilation
+of the same kernel module for Android.
+
+The adapter I tested relies on the mcs7830.ko kernel module,
+hence in the .config I set
+CONFIG_USB_NET_MCS7830=m
+(dependent on CONFIG_USB_USBNET).
+
+-------------------------------------------------------------
+Connect the adapter, load the module, configure IP addressing
+-------------------------------------------------------------
+
+Load the module through either insmod or modprobe, as explained in
+Android-Building-Kernel-Modules-HOWTO.txt
+
+If the module loads fine, plug the USB OTG cable and the USB-LAN adapter,
+as explained in Android-USB-Serial-Connection-HOWTO.txt
+and then the USB-serial adapter.
+If everything goes well, the output of the "dmesg" command should report
+that a new USB device has been added and that /dev/eth0 has been created,
+and this can be confirmed by the command
+ls -l /dev/eth0
+
+Connect the adapter to another Ethernet device.
+Please note that, very likely, the adapter does not support MDIX; hence,
+if also the other device does support MDIX (as an example, an old Cisco
+router/switch), you can not use either a straight-through or a crossover cable
+indifferently, you just need the right cable for your case: very likely,
+a straight-through cable to connect to a switch, a crossover cable to connect
+to a router.
+
+Configure IP addressing: as an example,
+ip -4 addr add 10.255.255.7/24 dev eth0
+ip -4 addr show
+
+Test connectivity to a neighbor using the ping command.
+

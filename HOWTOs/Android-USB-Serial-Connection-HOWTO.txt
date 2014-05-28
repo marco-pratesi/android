@@ -1,0 +1,248 @@
+
+*****************************************************
+HOWTO make a serial connection from an Android device
+*****************************************************
+
+----------
+Disclaimer
+----------
+
+This HOWTO assumes usage of root privileges, i.e. that your device is rooted.
+It is also assumed that you are able to use a root shell on a Terminal Emulator
+on Android: its usage is implicitly assumed (and is never explicitly cited).
+Rooting your Android device might void your warranty, damage it,
+kill your cat, burn your house, and cause many other dreadful things.
+I do not take any responsibility, you are completely on your own.
+If you don't know what "rooting Android" means, this HOWTO is not suited
+for you.
+
+-------------------
+Scope of this HOWTO
+-------------------
+
+You may have to connect to some devices via a serial connection:
+as an example, on a GNU/Linux platform, you can use Minicom, GtkTerm, Putty,
+and other programs, to connect to the Console port of a Cisco router
+and then access the IOS CLI through an "out of band" connection.
+
+Many other documents explain how you can make a serial connection from
+a workstation/laptop/netbook; I suppose you are already able to do this.
+In this document, I only remind some statements to support this HOWTO,
+whose goal is to explain how you can perform the same task from an
+Android device, i.e., very likely, either a tablet or a smartphone.
+
+----------
+Background
+----------
+
+Desktop workstations provide serial ports, corresponding to
+/dev/ttyS0, /dev/ttyS1, and so on; furthermore, you can install suited
+PCI cards to add more serial ports.
+Some years ago, a serial port was still available on some laptops.
+Nowadays, serial ports are not available on any laptop/netbook;
+USB-serial adapters are used to implement serial connections.
+AFAIK, the FTDI chipset is widely used for these adapters; on major
+GNU/Linux distributions, the ftdi_sio.ko kernel module is available
+in kernel packages and is auto-loaded as soon as you connect an adapter
+to a USB port; /dev/ttyUSB0, /dev/ttyUSB1, and so on, are created
+"on the fly" and are suitable for serial connections just as /dev/ttyS0 is.
+A terminal emulator like Minicom, GtkTerm, Putty, and others,
+can access /dev/ttyUSB0 (, ttyUSB1, etc.) to establish a serial connection
+to another device, such as a Cisco router/switch.
+
+To summarize, you need:
+1 - a USB port with USB OTG (On The Go) support
+2 - a USB-serial adapter
+3 - a kernel module to manage the USB-serial adapter
+4 - a program (software) implementing a serial port terminal emulator
+
+-----------------
+Let us proceed...
+-----------------
+
+Your Android-based device is very likely either a tablet or a smartphone;
+does it fulfill the four abovementioned requirements?
+
+Requirement 1: a USB port with USB OTG (On The Go) support
+----------------------------------------------------------
+
+Almost all tablets/smartphones have a microUSB port onboard,
+and a USB-microUSB cable is included in the package; you can use them
+to recharge the battery and eventually to access data from another device,
+such as a PC/laptop/netbook.
+You might think that some kind of adapter could be used to turn the male
+USB connector into a female one, and then to connect a USB stick to access
+its data from yor tablet/smartphone.  No, it is not that simple :-)
+When you connect your tablet to access its data from your laptop,
+the tablet acts as a USB slave and the laptop acts as a USB master.
+On the contrary, your tablet must operate as a USB master if you want
+to use it to read/write files/directories on a USB stick, and to establish
+a serial connection, too, whereas the USB stick and the USB-serial adapter
+must operate as USB slaves.
+
+For a tablet/smartphone, the ability of acting as a USB master is commonly
+referred to as "USB On The Go support" (USB OTG).
+To exploit the USB OTG support, you need a specific cable, just called
+"USB OTG cable", not easily found in electronics stores, but very cheap
+and easy to find on online stores.
+It is a male microUSB - female USB cable: just plug it into the microUSB port
+of your device, then plug your USB stick/USB-serial adapter
+into the female USB port.
+The female USB interface is not the only difference compared to the charging
+cable: you may search for specifications of the USB OTG cable and realize
+that two PINs must be shorted inside the microUSB connector, hence adding
+a male-female adapter to the charging cable is not enough.
+Furthermore, a USB OTG cable is very cheap and a USB adapter would not be
+significanty cheaper, hence tampering a charging cable to obtain
+a USB OTG cable is not worth the effort :-)
+
+NOTE: in this document, I only consider devices providing a microUSB port,
+that AFAIK is nowadays the recommended standard.
+Some devices provide different kinds of port; maybe, for them, just
+an accordingly different/specific kind of USB OTG cable is needed, but,
+in general, if you want to use such a device, please find and study
+technical specifications for it, as I am not acquainted of every device
+on the Earth (and I do not appreciate design choices that raise
+interoperability issues without any very good reason).
+
+Downstream the USB OTG cable, you can plug a USB slave device; alternatively,
+you can plug a USB hub, to connect USB keyboard, USB mouse, USB stick,
+USB-serial adapter, USB-LAN adapter, etc. to your tablet/smartphone.
+
+Well, but... does my tablet/smartphone support USB OTG?
+Some devices explicitly support it, as stated by technical specifications,
+manuals, and so on.
+Some other devices provide hardware capable of implementing USB OTG,
+but support is either missing or incomplete in their factory OS:
+the Google Nexus 7 2012 tablet and the Google Nexus 5 smartphone, respectively,
+to cite a few examples.
+For instance, on the Google Nexus 7 2012 tablet, even to use an external
+USB keyboard, you either have to root it and change the kernel, or to flash it
+with another Android distribution, such as Cyanogenmod
+(http://www.cyanogenmod.org/).
+I suspect that, patching/installing suited software, a lot of devices
+able to act as a USB slave could also act as a USB master even though
+the factory OS does not support USB OTG.
+However, some hardware limitations are really possible: as an example,
+it seems that the Google Nexus 4 smartphone can not act as a USB host because
+it does not supply the 5 volts needed to power USB devices; a three-way Y
+OTG cable and an external power source are needed to workaround
+this limitation[*][**].
+Eventually, other devices may have limitations that can not be overcome
+and/or are very difficult to identify.
+
+[*] http://www.androidcentral.com/android-advanced-usb-otg-nexus-4
+    http://www.androidheadlines.com/2013/03/nexus-4-gets-usb-otg-on-the-go-support-thanks-to-a-modification-from-xda.html
+
+[**] It is worth noting that such cable
+     - is also useful if you want to recharge the smartphone while using
+       USB devices
+     - is needed to mount an external USB disk, whose power requirements
+       are very likely not fulfilled by a smartphone
+
+To summarize: rebuilding the kernel may be needed if (to check whether)
+your device provides hardware USB OTG capability but (and) its software
+does not support it.
+You mileage may vary, a general and exhaustive discussion is not possible.
+The Android-Building-Kernel-Modules-HOWTO.txt document may be helpful;
+furthermore, you may search for hints in the .config of a kernel supporting
+USB OTG, as an example:
+https://github.com/CyanogenMod/android_kernel_asus_grouper/blob/cm-10.1/arch/arm/configs/cyanogenmod_grouper_defconfig
+
+Requirement 2: a USB-serial adapter
+-----------------------------------
+
+If you are reading this document, very likely you already have a USB-serial
+adapter and you already use it on your GNU/Linux PC/laptop/netbook.
+That adapter should be usable on Android, too, as the adapter can be driven by
+the suited Linux kernel module and Android is based on the Linux kernel, too.
+AFAIK, the FTDI chipset is widely used to implement such adapters, hence,
+very likely, you will simply have to build the ftdi_sio.ko Linux kernel
+module for Android.
+If you don't have a USB-serial adapter, then buy one that is supported
+by Linux; this HOWTO assumes usage of a FTDI-based adapters, but the same
+indications could be suitable for other chipsets/kernel modules, too.
+
+Requirement 3: a kernel module to drive the USB-serial adapter
+--------------------------------------------------------------
+
+As already stated, you will very likely need the ftdi_sio.ko kernel module.
+(Maybe a different module if your USB-serial adapter is based on a different
+chipset.)
+Almost surely, FTDI_SIO support is not already enabled in your kernel,
+as using Android for serial connections is very uncommon.
+Hence you will have to compile the kernel, or, at least, what is needed
+to build the ftdi_sio.ko kernel module.
+
+NOTE: you could build the kernel including static FTDI_SIO support,
+but I discommend this:
+- you would have to completely replace the already installed kernel;
+- if you choose modular support, you only have to upload once
+  the kernel module on your target device, and to load it when you need it,
+  without encumbering the RAM when you do not need it.
+
+To build the ftdi_sio.ko module, you can refer to
+Android-Building-Kernel-Modules-HOWTO.txt
+
+Once ftdi_sio.ko is built, copy it to the target device and load it
+through either insmod or modprobe.
+If the module loads fine, connect the USB OTG cable to the Android device,
+and then the USB-serial adapter.
+If everything goes well, the output of the "dmesg" command should report
+that a new USB device has been added and that /dev/ttyUSB0 has been created,
+and this can be confirmed by the command
+ls -l /dev/ttyUSB0
+Now you are ready to use this device through a serial port terminal emulator.
+
+Requirement 4: a program implementing a serial port terminal emulator
+---------------------------------------------------------------------
+
+For the same reason why FTDI support was not already built in the kernel,
+almost surely you will not find any graphical application implementing
+a serial port terminal emulator for Android.
+You can try to cross-compile a console-based application intended for Linux
+and/or Unixes, such as Minicom.
+I tried to cross-compile Minicom for Android, but I found too many problems
+and I gave up (at least for the moment :-P).
+I also have not succeeded in cross-compiling Microcom, but I have not devoted
+much effort, as it was not suited to access Cisco devices from a GNU/Linux
+laptop, and I guess it would not be more suited when using an Android device.
+Then I tried other ones, and, with reasonable effort, I succeeded with
+Picocom (http://code.google.com/p/picocom/)
+and Nanocom (http://nanocom.sourceforge.net/).
+On this repository, you find a small patch and instructions to build Picocom.
+I more deeply changed the source code of Nanocom, to solve some problems
+of compatibility with the Cisco IOS console, to make it work on Android,
+to improve usability of the user interface with the virtual keyboard of touch
+devices and on small screens, and to make some other minor improvements.
+On my nanocomsole repository, I released this modified version of Nanocom
+as Nanocomsole 1.0.
+NOTE: Picocom, Nanocom, and Nanocomsole are free software, release under
+the GNU General Public License.
+Summarizing, I suggest you to use either Picocom or Nanocomsole.
+IMHO, on a touch device, Nanocomsole is more comfortable than Picocom,
+because Picocom involves a more intensive usage of even consecutive CTRL+*
+keyboard combinations: if you are not using an external keyboard,
+this is not comfortable on an Android tablet/smartphone, as you have to press
+a physical button[*] and touch a key on the virtual keyboard at the same time
+for each CTRL+* combination.
+However, this is only my opinion, and I used Picocom and Nanocomsole to access
+only the console port of Cisco devices.
+
+[*] By default, VOL- is mapped on CTRL on the Android Terminal Emulator.
+
+------------
+Success case
+------------
+
+I succeeded in making everything work on a Google Nexus 7 3G 2012 tablet.
+I also used a very small and cheap USB hub and attached to it a USB-Ethernet
+adapter, to connect the router via Ethernet, too, and backup its configuration
+and its flash memory (its Cisco IOS image) on the tablet, after the execution
+of the Cisco "password recovery" procedure.
+Usage of the USB-Ethernet adapter through the mcs7830.ko kernel module
+is documented in Android-USB-Ethernet-Adapter-HOWTO.txt
+To backup the router, I used the TFTPD-HPA server on the tablet;
+on this repository, you also find instructions to build and use
+tftp-hpa and tftpd-hpa for Android.
+

@@ -1,0 +1,330 @@
+
+*************************************************
+HOWTO build additional kernel modules for Android
+*************************************************
+
+----------
+Disclaimer
+----------
+
+This HOWTO assumes usage of root privileges, i.e. that your device is rooted.
+It is also assumed that you are able to use a root shell on a Terminal Emulator
+on Android: its usage is implicitly assumed (and is never explicitly cited).
+Rooting your Android device might void your warranty, damage it,
+kill your cat, burn your house, and cause many other dreadful things.
+I do not take any responsibility, you are completely on your own.
+If you don't know what "rooting Android" means, this HOWTO is not suited
+for you.
+
+-------------------
+Scope of this HOWTO
+-------------------
+
+So many documents dealing with the Linux kernel compilation for GNU/Linux
+are already available.
+This document is not intended to write yet another one of them: here, I suppose
+that you are already familiar with this topic; if you are not, train yourself
+building kernel on GNU/Linux before (it is a good idea anyway :-) ).
+There are some documents about cross-compilation of the Linux kernel
+for Android, too; I prepared this HOWTO to collect and organize informations
+relevant to my needs and to support other HOWTOs I want to write.
+
+--------------
+Test platforms
+--------------
+
+Tested, not exhaustively, using the following build platforms:
+- GNU/Linux Ubuntu 12.04 x86 (32 bit)
+- GNU/Linux Ubuntu 14.04 x86_64 (64 bit).
+
+Tested on a Google Nexus 7 3G 2012 tablet, with
+- Cyanogenmod 10.1.3
+- Cyanogenmod 10.2.1
+I made only few tests on 10.2.1, as I experienced some problems
+with CTRL and cursor arrows on the Android Terminal Emulator
+(both with the virtual keyboard and with an external USB keyboard),
+and I was not comfortable with some behaviors of the default shell.
+Do not blame me as a newbie: I performed wipings and factory reset more than
+once, but such annoying behaviors persisted, and I can not tolerate being
+uncomfortable with the only true user interface, i.e. the shell terminal. :-)
+Then I went back to 10.1.3 and carried out all the work on it.
+
+NOTE: Cyanogenmod 10.1.3 and 10.2.1 did not load modules I built
+with Android NDK; the following error message was returned by insmod:
+ftdi_sio: unknown relocation: 27
+
+------------------------
+Get Linux kernel sources
+------------------------
+
+Download the kernel source tree that has been used to build the kernel
+running on your mobile device.
+Some relevant repositories may be:
+https://android.googlesource.com/
+https://github.com/cyanogenmod/
+If such sources are either not available or packed without documentation
+(and you do not have a crystal ball to guess how to compile them),
+search for the kernel source tree that most closely matches your case.
+
+As an example, kernel sources of Cyanogenmod for the Google Nexus 7 2012,
+both for the Wi-Fi version (codename: grouper) and the 3G version
+(codename: tilapia), can be found [1] at
+https://github.com/cyanogenmod/android_kernel_asus_grouper/ =>
+https://github.com/cyanogenmod/android_kernel_asus_grouper/tree/cm-10.1
+https://github.com/cyanogenmod/android_kernel_asus_grouper/tree/cm-10.2
+[...]
+
+Hint: download a zip/tar.gz archive through the web page of the repository,
+to save a lot of time and bandwidth; cloning through the git client,
+you would download the .git directory, too, that takes a lot of disk space
+and bandwidth, and is only needed for more advanced usage of the repository.
+The same suggestion may be useful for suubsequent sections of this document.
+
+------------------------------------------------------
+Choose a toolchain to cross-compile the kernel sources
+------------------------------------------------------
+
+The best option for compatibility: if it is possible (if it is available),
+choose the same toolchain that has been used to build the kernel
+of your Android distribution.
+As you can experience on GNU/Linux, this option is not a must, but minimizes
+the risk of binary incompatibilities.
+
+Some available toolchains:
+
+- the prebuilt gcc on android.googlesource.com [2]
+  (for 64 bit build platforms only)
+  https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/arm/arm-eabi-4.6 =>
+  https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/arm/arm-eabi-4.6/+/master =>
+  https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/arm/arm-eabi-4.6/+archive/master.tar.gz
+
+- the Cyanogenmod prebuilt toolchain [1] (for 32 bit build platforms;
+  installation of some 32 bit libraries is needed on 64 bit build platforms)
+  https://github.com/CyanogenMod/android_prebuilt.git =>
+  https://github.com/CyanogenMod/android_prebuilt =>
+  https://github.com/CyanogenMod/android_prebuilt/tree/cm-10.1 =>
+  https://github.com/CyanogenMod/android_prebuilt/archive/cm-10.1.zip
+  https://github.com/CyanogenMod/android_prebuilt/tree/cm-10.2 =>
+  https://github.com/CyanogenMod/android_prebuilt/archive/cm-10.2.zip
+  [...]
+
+- the Android Native Development Kit (NDK) [3]
+
+Install (i.e. unpack) the toolchain(s) in the directory you prefer.
+
+----------------------------------------------------
+Set environment variables according to the toolchain
+----------------------------------------------------
+
+For all toolchains:
+export ARCH=arm
+export SUBARCH=arm
+
+For the android.googlesource.com prebuilt gcc:
+export PATH=[your_installation_path]/bin:$PATH
+(as an example:
+ export PATH=/opt/android.googlesource.com/platform/prebuilts/gcc/linux-x86/arm/arm-eabi-4.6/bin:$PATH
+)
+export CROSS_COMPILE=arm-eabi-
+
+For the Cyanogenmod prebuilt toolchain:
+export PATH=[your_installation_path]/linux-x86/toolchain/arm-eabi-4.4.3/bin:$PATH
+(as an example:
+ export PATH=/opt/android_prebuilt-cm-10.1/linux-x86/toolchain/arm-eabi-4.4.3/bin:$PATH
+)
+export CROSS_COMPILE=arm-eabi-
+
+For Android NDK:
+set the PATH environment variable according to
+- usage of either a 32 bit or a 64 bit build platform
+- your installation path of the Android NDK
+- the cross-compiler version you want to use
+as an example:
+export PATH=/opt/android-ndk-r9d/toolchains/arm-linux-androideabi-4.6/prebuilt/linux-x86_64/bin:$PATH
+export CROSS_COMPILE=arm-linux-androideabi-
+
+For another toolchain:
+search for the documentation of that toolchain :-)
+Very likely, the directory to prepend to the PATH environment variable
+is the [...]/bin directory where you find many gcc executables named
+[NAME_PREFIX]addr2line
+[NAME_PREFIX]ar
+[NAME_PREFIX]as
+[NAME_PREFIX]c++
+[NAME_PREFIX]c++filt
+[NAME_PREFIX]cpp
+[NAME_PREFIX]g++
+[NAME_PREFIX]gcc
+[NAME_PREFIX]gcov
+[NAME_PREFIX]gdb
+[NAME_PREFIX]gprof
+[NAME_PREFIX]ld
+[NAME_PREFIX]nm
+[NAME_PREFIX]objcopy
+[NAME_PREFIX]objdump
+[NAME_PREFIX]ranlib
+[NAME_PREFIX]readelf
+[NAME_PREFIX]size
+[NAME_PREFIX]strings
+[NAME_PREFIX]strip
+[NAME_PREFIX]...
+([NAME_PREFIX] is very likely something as "arm-eabi-",
+"arm-linux-androideabi-", and so on)
+then, after the PATH environment variable, set
+export CROSS_COMPILE=[NAME_PREFIX]
+and then hope for the best and try :-)
+
+---------------------------------
+Build the needed kernel module(s)
+---------------------------------
+
+Unpack the kernel sources and cd to their tree.
+Example:
+unzip android_kernel_asus_grouper-cm-10.1.zip
+cd android_kernel_asus_grouper-cm-10.1
+
+The kernel may refuse loading modules if the vermagic does not match,
+thus edit the Makefile to set KERNELRELEASE just according to it [1].
+To find the exact target kernel version string, you may either run "uname -a"
+on the Android Terminal Emulator, or look for informations about the system
+(Kernel version) in the Setting GUI/Application.
+Examples about Google Nexus 7 2012 GSM (tilapia):
+Settings => About tablet => Kernel version:
+CM-10.1.3: 3.1.10-gd08812a build03@cyanogenmod #1 Mod Sep 23 20:47:32 PDT 2013
+CM-10.2.1: 3.1.10-g30c5396 build02@cyanogenmod #1 Mon Feb 3 16:09:59 PST 2014
+$ uname -a
+CM-10.1.3: Linux localhost 3.1.10-gd08812a #1 SMP PREEMPT Mon Sep 23 20:47:32 PDT 2013 armv7l GNU/Linux
+CM-10.2.1: Linux localhost 3.1.10-g30c5396 #1 SMP PREEMPT Mon Feb 3 16:09:59 PST 2014 armv7l GNU/Linux
+diff Makefile.old Makefile  # for CM-10.1.3:
+380c380
+< KERNELRELEASE = $(shell cat include/config/kernel.release 2> /dev/null)
+---
+> KERNELRELEASE = "3.1.10-gd08812a"
+Alternatively, you may edit include/config/kernel.release accordingly
+(if it exists).
+NOTE: in more complex cases, you may have to also edit include/linux/vermagic.h
+and some other similar stuff, eventually after some subsequent steps.
+
+Choose a config to start with - if possible, just the one matching the kernel
+you are currently running on your mobile device - and copy it as .config
+in the kernel sources tree.
+Example:
+cp arch/arm/configs/cyanogenmod_grouper_defconfig .config
+
+NOTE: check if loadable module support is enabled ("CONFIG_MODULES=y").
+If it is not, to add hardware support, rebuilding and reinstalling
+(i.e. reflashing) the whole kernel is needed anyway:
+- if you want to use modules, you have to build a kernel with loadable module
+  support enabled
+- if you decide to choose the static option, without loadable module support,
+  to change the set of supported hardware you need to rebuild and reinstall
+  the whole kernel each time anyway.
+As an example, loadable module support is disabled on Cyanogenmod
+for the Google Nexus 7 2013 tablet and for the Google Nexus 4 smartphone:
+"# CONFIG_MODULES is not set" in
+https://github.com/CyanogenMod/android_kernel_google_msm/blob/cm-10.2/arch/arm/configs/cyanogen_flo_defconfig
+https://github.com/CyanogenMod/android_kernel_google_msm/blob/cm-10.2/arch/arm/configs/cyanogen_mako_defconfig
+https://github.com/CyanogenMod/android_kernel_google_msm/blob/cm-11.0/arch/arm/configs/cyanogen_flo_defconfig
+https://github.com/CyanogenMod/android_kernel_google_msm/blob/cm-11.0/arch/arm/configs/cyanogen_mako_defconfig
+
+Manipulate .config as it is usually done on GNU/Linux: after all, you are
+dealing with the Linux kernel anyway, even though
+- you are *cross*-compiling it
+- your target platform is Android/Linux instead of GNU/Linux
+
+Even though you are cross-compiling, you can also use "make menuconfig":
+as an example, to build the ftdi_sio.ko and mcs7830.ko modules:
+
+Device Drivers ---> USB support ---> 
+                     ^^^^^^^^^^^^^^^^ check that host-side and OTG support are enabled...
+                     ^^^^^^^^^^^^^^^^ very interesting: USB Gadget Support (http://www.linux-usb.org/gadget)
+*** USB port drivers ***
+USB Serial Converter support ---> 
+<M>   USB FTDI Single Port Serial Driver (CONFIG_USB_SERIAL_FTDI_SIO)
+
+Device Drivers ---> Network device support ---> USB Network Adapters --->
+<M>   MosChip MCS7830 based Ethernet adapters
+
+However, a quicker (if appropriate) solution consists of editing .config
+with bare hands:
+cp .config .config.old
+edit .config with a text editor, according to the following diff:
+diff .config.old .config
+1267c1267
+< # CONFIG_USB_NET_MCS7830 is not set
+---
+> CONFIG_USB_NET_MCS7830=m
+2457c2457
+< # CONFIG_USB_SERIAL_FTDI_SIO is not set
+---
+> CONFIG_USB_SERIAL_FTDI_SIO=m
+
+Prepare for build using the provided .config [4], [5]:
+make oldconfig
+make prepare
+make modules_prepare
+(For further options, run "make help".)
+
+Build the needed modules; you do not have to build everything, you can avoid
+building the static part of the kernel and unneeded (already installed)
+modules [5], [6]:
+make M=[directory of the module to build]
+Examples:
+make M=drivers/usb/serial/ # to build drivers/usb/serial/ftdi_sio.ko
+make M=drivers/net/usb/    # to build drivers/net/usb/mcs7830.ko
+(You may want to run "make" with the -j option to set the number of CPU
+cores to be used on the build platform [1], e.g. "make -j2 ..." on a dual-core
+netbook; anyway, if you only have to build a few modules, this option
+is almost insignificant.)
+
+Strip modules to remove unneded symbols and save memory on the target device
+that will run them:
+${CROSS_COMPILE}strip --strip-debug [path]/[just_built_module].ko
+Example:
+ls -l drivers/usb/serial/ftdi_sio.ko  # about 300 kbytes before stripping it
+${CROSS_COMPILE}strip --strip-debug drivers/usb/serial/ftdi_sio.ko
+ls -l drivers/usb/serial/ftdi_sio.ko  # about 100 kbytes after stripping it
+ls -l drivers/net/usb/mcs7830.ko      # about 200 kbytes before stripping it
+${CROSS_COMPILE}strip --strip-debug drivers/net/usb/mcs7830.ko
+ls -l drivers/net/usb/mcs7830.ko      # about 10 kbytes after stripping it
+
+Through a program capable of viewing/editing binary files (e.g. VIM),
+open a .ko module in the target system (very likely, in /system/lib/modules)
+and the built module(s), to check if "vermagic=..." is the same;
+it is not and the built modules do not load, go back and try again,
+changing something accordingly in your build process.
+
+--------------------
+Test built module(s)
+--------------------
+
+After building a kernel module, you can put it the /data/local directory
+(or in /sdcard, or somewhere else) of the target Android device.
+The system directory for kernel modules is very likely /system/lib/modules;
+I do not suggest using it: apart from the fact that you have to remount
+/system as read-write to add/remove files to /system/lib/modules,
+custom built modules are more easily identified if you put them elsewhere.
+One uploaded a module to the target system, try to load it into
+the running kernel: as an example,
+insmod /data/local/ftdi_sio.ko
+If no errors are reported, check if the module has been loaded:
+lsmod | grep ftdi_sio
+
+If something went wrong, try the following commands to investigate:
+insmod /data/local/ftdi_sio.ko ; dmesg
+insmod /data/local/ftdi_sio.ko ; dmesg | grep ftdi
+and then search the web for the problem you are experiencing; an exhaustive
+discussion of all possible cases is not possible, you mileage may vary,
+I can only wish you good luck :-)
+
+----------
+References
+----------
+
+[1] http://mehrvarz.github.io/building-nexus-7-kernel/
+[2] http://source.android.com/source/building-kernels.html
+[3] https://developer.android.com/tools/sdk/ndk/index.html
+[4] http://www.pixelbeat.org/docs/rebuild_kernel_module.html
+[5] http://askubuntu.com/questions/168279/how-do-i-build-a-single-in-tree-kernel-module
+[6] http://www.linuxquestions.org/questions/linux-kernel-70/rebuilding-a-single-kernel-module-595116/#post3648679
+
