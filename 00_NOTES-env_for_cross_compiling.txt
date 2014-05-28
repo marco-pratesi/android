@@ -17,8 +17,10 @@ For Android-ARM platforms:
 --------------------------
 
 export NDK_BASE=/opt/android-ndk
-export NDK_TOOLCHAIN=$NDK_BASE/toolchains/arm-linux-androideabi-4.6/prebuilt/linux-x86
-export NDK_SYSROOT=$NDK_BASE/platforms/android-14/arch-arm
+export GCC_VERSION=4.6
+export API_LEVEL=14
+export NDK_TOOLCHAIN=$NDK_BASE/toolchains/arm-linux-androideabi-$GCC_VERSION/prebuilt/linux-x86
+export NDK_SYSROOT=$NDK_BASE/platforms/android-$API_LEVEL/arch-arm
 export CC="$NDK_TOOLCHAIN/bin/arm-linux-androideabi-gcc --sysroot=$NDK_SYSROOT"
 export CXX="$NDK_TOOLCHAIN/bin/arm-linux-androideabi-g++ --sysroot=$NDK_SYSROOT"
 export LD=$NDK_TOOLCHAIN/bin/arm-linux-androideabi-ld
@@ -27,9 +29,12 @@ export STRIP=$NDK_TOOLCHAIN/bin/arm-linux-androideabi-strip
 export OBJDUMP=$NDK_TOOLCHAIN/bin/arm-linux-androideabi-objdump
 export RANLIB=$NDK_TOOLCHAIN/bin/arm-linux-androideabi-ranlib
 
-You may want to use different settings: as an example, replace
-"arm-linux-androideabi-4.6" with "arm-linux-androideabi-4.4.3"
-if you want to cross-compile through gcc 4.4.3 instead of gcc 4.6.
+You may want to use different settings: as an example,
+replace "GCC_VERSION=4.6" with "GCC_VERSION=4.4.3"
+if you want to cross-compile through gcc 4.4.3 instead of gcc 4.6;
+you may also want to change the API_LEVEL according to the set
+of versions of Android you want to support: refer to
+https://developer.android.com/guide/topics/manifest/uses-sdk-element.html#ApiLevels
 
 In most cases considered here, the build will continue with a "configure"
 command such as
@@ -39,8 +44,10 @@ For Android-x86 platforms:
 --------------------------
 
 export NDK_BASE=/opt/android-ndk
-export NDK_TOOLCHAIN=$NDK_BASE/toolchains/x86-4.4.3/prebuilt/linux-x86
-export NDK_SYSROOT=$NDK_BASE/platforms/android-14/arch-x86
+export GCC_VERSION=4.4.3
+export API_LEVEL=14
+export NDK_TOOLCHAIN=$NDK_BASE/toolchains/x86-$GCC_VERSION/prebuilt/linux-x86
+export NDK_SYSROOT=$NDK_BASE/platforms/android-$API_LEVEL/arch-x86
 export CC="$NDK_TOOLCHAIN/bin/i686-linux-android-gcc --sysroot=$NDK_SYSROOT"
 export CXX="$NDK_TOOLCHAIN/bin/i686-linux-android-g++ --sysroot=$NDK_SYSROOT"
 export LD=$NDK_TOOLCHAIN/bin/i686-linux-android-ld
