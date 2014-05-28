@@ -34,3 +34,8 @@ On the target system, put executables (tftp/tftp-hpa and tftpd/tftpd-hpa)
 and docs (tftp/tftp-hpa.1.txt and tftpd/tftpd-hpa.8.txt) where it is
 convenient to you.  (Remember to chmod executables.)
 
+An example of usage:
+mkdir -p /data/local/tftpboot
+./tftpd-hpa -L -u root -a :69 -s -c -U 022 -p /data/local/tftpboot
+Stop tftpd-hpa with CTRL-C when you do not need it anymore.
+
