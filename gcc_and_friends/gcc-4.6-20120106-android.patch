@@ -1,0 +1,17 @@
+diff -Nrup gcc-4.6-20120106.orig/libiberty/getpagesize.c gcc-4.6-20120106/libiberty/getpagesize.c
+--- gcc-4.6-20120106.orig/libiberty/getpagesize.c	2014-05-30 13:58:55.000000000 +0200
++++ gcc-4.6-20120106/libiberty/getpagesize.c	2014-05-31 16:01:13.447227881 +0200
+@@ -60,11 +60,11 @@ BUGS
+ # endif /* PAGESIZE */
+ #endif /* GNU_OUR_PAGESIZE */
+ 
+-int
++/* int
+ getpagesize (void)
+ {
+   return (GNU_OUR_PAGESIZE);
+-}
++} */
+ 
+ #else /* VMS */
+ 

@@ -1,0 +1,151 @@
+
+******************************************************
+HOWTO build a native GCC (and its friends) for Android
+******************************************************
+
+This document reports cross-compilation, through Android NDK, of GCC 4.6
+(and related packages) to obtain a native compiler for Android (on ARM).
+
+Tested on:
+build platform: GNU/Linux Ubuntu 14.04 x86_64 with android-ndk-r9d.
+target platform: Cyanogenmod 10.1.3 (Android 4.2.2)
+                 on the Google Nexus 7 3G 2012 tablet (tilapia).
+
+The resulting native GCC compiler has been successfully used to natively build
+Picocom 1.7[*], Nanocomsole 1.0[**], and some very simple C++ examples.
+[*] with the patch provided at
+    https://github.com/marco-pratesi/android/tree/master/picocom
+[**] https://github.com/marco-pratesi/nanocomsole/tree/master/nanocomsole-1.0
+
+Retrieve:
+- gmp-5.0.5.tar.bz2 from https://android.googlesource.com/toolchain/gmp/+/master
+  (i.e. from https://android.googlesource.com/toolchain/gmp/+archive/master.tar.gz)
+- mpfr-3.1.1.tar.bz2 from https://android.googlesource.com/toolchain/mpfr/+/master
+  (i.e. from https://android.googlesource.com/toolchain/mpfr/+archive/master.tar.gz)
+- mpc-1.0.1.tar.gz from https://android.googlesource.com/toolchain/mpc/+/master
+  (i.e. from https://android.googlesource.com/toolchain/mpc/+archive/master.tar.gz)
+- binutils-2.21.tar.gz from https://android.googlesource.com/toolchain/binutils/+/master/binutils-2.21/
+  (https://android.googlesource.com/toolchain/binutils/+archive/master/binutils-2.21.tar.gz)
+- gcc-4.6.tar.gz from https://android.googlesource.com/toolchain/gcc/+/master
+  (=> https://android.googlesource.com/toolchain/gcc/+/master/gcc-4.6/
+   => https://android.googlesource.com/toolchain/gcc/+archive/master/gcc-4.6.tar.gz)
+- make-4.0.tar.bz2 from http://www.gnu.org/software/make/
+
+apt-get install texinfo flex bison bisonc++
+
+Set the needed environment variables as explained
+in 00_NOTES-env_for_cross_compiling.txt (in the root of the repository)
+with GCC_VERSION=4.6 and API_LEVEL=14.
+
+export TARGET_DIR=/data/local
+export TARGET_ABI=arm-linux-androideabi
+
+mkdir -p $TARGET_DIR
+cp -a $NDK_SYSROOT/usr/* $TARGET_DIR
+chown -R root.root $TARGET_DIR
+
+Go to your build directory and put there all source archives and all patches.
+
+tar xf gmp-5.0.5.tar.bz2 ; cd gmp-5.0.5
+export GMP_BUILD_DIR=`pwd`
+./configure --host=$TARGET_ABI --prefix=$TARGET_DIR
+make ; make install
+cd ..
+
+tar xf mpfr-3.1.1.tar.bz2 ; cd mpfr-3.1.1
+export MPFR_BUILD_DIR=`pwd`
+patch -p1 < ../mpfr-3.1.1-android.patch
+./configure --host=$TARGET_ABI --prefix=$TARGET_DIR --with-gmp=$TARGET_DIR
+make ; make install
+cd ..
+
+tar xf mpc-1.0.1.tar.gz ; cd mpc-1.0.1
+export MPC_BUILD_DIR=`pwd`
+./configure --host=$TARGET_ABI --prefix=$TARGET_DIR --with-gmp=$TARGET_DIR --with-mpfr=$TARGET_DIR
+make ; make install
+cd ..
+
+mkdir binutils-2.21 ; cd binutils-2.21 ; tar xf ../binutils-2.21.tar.gz
+patch -p1 < ../binutils-2.21-android.patch
+cd .. ; mkdir binutils-2.21-build ; cd binutils-2.21-build
+../binutils-2.21/configure --host=$TARGET_ABI --target=$TARGET_ABI --prefix=$TARGET_DIR --disable-nls
+make
+When the build stops due to a warning treated as an error, edit ld/Makefile
+to remove "-Werror" from the definition of WARN_CFLAGS, then run "make" again:
+make ; make install
+cd ..
+
+mkdir gcc-4.6-20120106 ; cd gcc-4.6-20120106 ; tar xf ../gcc-4.6.tar.gz
+patch -p1 < ../gcc-4.6-20120106-android.patch
+cd .. ; mkdir gcc-4.6-20120106-build ; cd gcc-4.6-20120106-build
+# Some Makefile entries will refer to the NDK cross-compiler without
+# the full path; the following PATH setting saves a lot of troubles.
+export PATH=$NDK_TOOLCHAIN/bin:$PATH
+../gcc-4.6-20120106/configure \
+  --host=$TARGET_ABI --target=$TARGET_ABI --prefix=$TARGET_DIR \
+  --enable-languages=c,c++ --disable-nls \
+  --with-gmp-include=$GMP_BUILD_DIR --with-gmp-lib=$GMP_BUILD_DIR/.libs \
+  --with-mpfr-include=$MPFR_BUILD_DIR/src --with-mpfr-lib=$MPFR_BUILD_DIR/src/.libs \
+  --with-mpc-include=$MPC_BUILD_DIR/src --with-mpc-lib=$MPC_BUILD_DIR/src/.libs
+# does not work for me (the resulting compiler does not build C++ programs):
+# --disable-libstdc__-v3 \  # to save disk space and avoid linking problems with C++
+# With the following (simpler) configure options, the build fails
+# (do not ask me why):
+# --with-gmp=$TARGET_DIR --with-mpfr=$TARGET_DIR --with-mpc=$TARGET_DIR
+# To fix some definitions of the cross-compiler in the generated Makefile:
+patch -p1 < ../gcc-4.6-20120106-build-android.patch
+make  # make -j 2 (if you can)
+make install
+# To avoid dynamic linking problems with C++:
+( for directory in lib lib/armv7-a lib/armv7-a/hard lib/armv7-a/thumb lib/armv7-a/thumb/hard lib/thumb ; \
+  do cd $TARGET_DIR/$directory ; mv libstdc++.so .libstdc++.so ; done )
+# Note: with this choice, the static version of libstdc++ will be linked,
+# hence compatibility issues with /system/lib/libstdc++.so are bypassed.
+# Alternatively, you can keep $TARGET_DIR/lib/libstdc++.so and
+# either use "g++ -static" or set LD_PRELOAD=$TARGET_DIR/lib/libstdc++.so
+cd ..
+
+tar xf make-4.0.tar.bz2 ; cd make-4.0
+patch -p1 < ../make-4.0-android.patch
+./configure --host=$TARGET_ABI --prefix=$TARGET_DIR
+make ; make install
+cd ..
+
+In $TARGET_DIR/libexec/gcc/arm-linux-androideabi/4.6/install-tools/
+replace "/bin/sh" with "/system/bin/sh" (or, eventually, with bash,
+if it is available on the target device) in the first line
+of fixinc.sh, mkheaders, and mkinstalldirs
+
+Strip binaries to save disk space:
+( cd $TARGET_DIR/arm-linux-androideabi/bin ; $STRIP * )
+( cd $TARGET_DIR/bin ; $STRIP * )
+( for directory in lib lib/armv7-a lib/armv7-a/hard lib/armv7-a/thumb lib/armv7-a/thumb/hard lib/thumb ; \
+  do cd $TARGET_DIR/$directory ; \
+  $STRIP --strip-unneeded *.so *.so.* .*.so ; done )
+( cd $TARGET_DIR/libexec/gcc/arm-linux-androideabi/4.6 ; \
+  $STRIP cc1 cc1plus collect2 lto1 lto-wrapper ; \
+  $STRIP --strip-unneeded libfunction_reordering_plugin.so.0.0.0 liblto_plugin.so.0.0.0 )
+( cd $TARGET_DIR/libexec/gcc/arm-linux-androideabi/4.6/install-tools ; $STRIP fixincl )
+
+You may want to replace some hard links with symbolic links.
+#Identical files can be found, as an example, with commands like
+#md5sum * | sort
+#sha256sum * | sort
+( cd $TARGET_DIR/arm-linux-androideabi/bin ; rm ld.bfd ; ln -s ld ld.bfd )
+( cd $TARGET_DIR/bin ; \
+  for file in arm-linux-androideabi-c++ arm-linux-androideabi-g++ c++ ; \
+  do rm $file ; ln -s g++ $file ; done ; \
+  for file in arm-linux-androideabi-gcc arm-linux-androideabi-gcc-4.6 ; \
+  do rm $file ; ln -s gcc $file ; done ; \
+  rm ld.bfd ; ln -s ld ld.bfd )
+
+Put the $TARGET_DIR tree on the target device.
+On the target device, to use this stuff, set needed environment variables,
+such as (assuming that TARGET_DIR is /data/local)
+export PATH=$PATH:/data/local/bin
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/data/local/lib
+and, eventually,
+export CC=gcc
+export CXX=g++
+[...]
+

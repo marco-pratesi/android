@@ -1,0 +1,22 @@
+--- gcc-4.6-20120106-build/Makefile.orig	2014-05-31 18:24:45.807571562 +0200
++++ gcc-4.6-20120106-build/Makefile	2014-05-31 19:34:49.471739312 +0200
+@@ -471,15 +471,15 @@ do-compare3 = $(do-compare)
+ 
+ AR_FOR_TARGET=arm-linux-androideabi-ar
+ AS_FOR_TARGET=arm-linux-androideabi-as
+-CC_FOR_TARGET=$(STAGE_CC_WRAPPER) arm-linux-androideabi-cc
++CC_FOR_TARGET=$(STAGE_CC_WRAPPER) arm-linux-androideabi-gcc --sysroot=$(NDK_SYSROOT)
+ 
+ # If GCC_FOR_TARGET is not overriden on the command line, then this
+ # variable is passed down to the gcc Makefile, where it is used to
+ # build libgcc2.a.  We define it here so that it can itself be
+ # overridden on the command line.
+-GCC_FOR_TARGET=$(STAGE_CC_WRAPPER) arm-linux-androideabi-gcc
+-CXX_FOR_TARGET=$(STAGE_CC_WRAPPER) arm-linux-androideabi-c++
+-RAW_CXX_FOR_TARGET=$(STAGE_CC_WRAPPER) arm-linux-androideabi-c++
++GCC_FOR_TARGET=$(STAGE_CC_WRAPPER) arm-linux-androideabi-gcc --sysroot=$(NDK_SYSROOT)
++CXX_FOR_TARGET=$(STAGE_CC_WRAPPER) arm-linux-androideabi-c++ --sysroot=$(NDK_SYSROOT)
++RAW_CXX_FOR_TARGET=$(STAGE_CC_WRAPPER) arm-linux-androideabi-c++ --sysroot=$(NDK_SYSROOT)
+ GCJ_FOR_TARGET=$(STAGE_CC_WRAPPER) arm-linux-androideabi-gcj
+ GFORTRAN_FOR_TARGET=$(STAGE_CC_WRAPPER) arm-linux-androideabi-gfortran
+ GOC_FOR_TARGET=$(STAGE_CC_WRAPPER) arm-linux-androideabi-gccgo

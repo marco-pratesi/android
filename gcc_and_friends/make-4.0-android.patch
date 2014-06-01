@@ -1,0 +1,27 @@
+diff -Nrup make-4.0.orig/arscan.c make-4.0/arscan.c
+--- make-4.0.orig/arscan.c	2013-10-06 01:12:18.000000000 +0200
++++ make-4.0/arscan.c	2014-05-31 20:36:58.683888129 +0200
+@@ -251,7 +251,7 @@ ar_scan (const char *archive, ar_member_
+ #endif
+ 
+ #ifndef WINDOWS32
+-# ifndef __BEOS__
++# if !defined(__BEOS__) && !defined(__BIONIC__)
+ #  include <ar.h>
+ # else
+    /* BeOS 5 doesn't have <ar.h> but has archives in the same format
+diff -Nrup make-4.0.orig/job.c make-4.0/job.c
+--- make-4.0.orig/job.c	2013-10-06 01:12:24.000000000 +0200
++++ make-4.0/job.c	2014-05-31 20:36:58.683888129 +0200
+@@ -67,6 +67,11 @@ int batch_mode_shell = 0;
+ char default_shell[] = "";
+ int batch_mode_shell = 0;
+ 
++#elif defined (__BIONIC__)
++
++char default_shell[] = "/system/bin/sh";
++int batch_mode_shell = 0;
++
+ #else
+ 
+ char default_shell[] = "/bin/sh";

@@ -1,0 +1,12 @@
+diff -Nrup mpfr-3.1.1.orig/src/mpfr-impl.h mpfr-3.1.1/src/mpfr-impl.h
+--- mpfr-3.1.1.orig/src/mpfr-impl.h	2012-07-03 17:01:19.000000000 +0200
++++ mpfr-3.1.1/src/mpfr-impl.h	2014-05-31 14:53:26.647065593 +0200
+@@ -1135,6 +1135,8 @@ do {
+ #include <locale.h>
+ /* Warning! In case of signed char, the value of MPFR_DECIMAL_POINT may
+    be negative (the ISO C99 does not seem to forbid negative values). */
++#endif
++#if defined(HAVE_LOCALE_H) && !defined(__BIONIC__)
+ #define MPFR_DECIMAL_POINT (localeconv()->decimal_point[0])
+ #define MPFR_THOUSANDS_SEPARATOR (localeconv()->thousands_sep[0])
+ #else
