@@ -1,0 +1,45 @@
+diff -Nrup gcc-4.6-20120106.orig/gcc/cp/g++spec.c gcc-4.6-20120106/gcc/cp/g++spec.c
+--- gcc-4.6-20120106.orig/gcc/cp/g++spec.c	2014-05-30 13:58:29.000000000 +0200
++++ gcc-4.6-20120106/gcc/cp/g++spec.c	2014-06-04 13:29:47.599363668 +0200
+@@ -42,7 +42,7 @@ along with GCC; see the file COPYING3.
+ #endif
+ 
+ #ifndef LIBSTDCXX
+-#define LIBSTDCXX "stdc++"
++#define LIBSTDCXX "stdc++gcc"
+ #endif
+ #ifndef LIBSTDCXX_PROFILE
+ #define LIBSTDCXX_PROFILE LIBSTDCXX
+diff -Nrup gcc-4.6-20120106.orig/libstdc++-v3/python/Makefile.in gcc-4.6-20120106/libstdc++-v3/python/Makefile.in
+--- gcc-4.6-20120106.orig/libstdc++-v3/python/Makefile.in	2014-05-30 13:59:16.000000000 +0200
++++ gcc-4.6-20120106/libstdc++-v3/python/Makefile.in	2014-06-04 13:29:47.631363667 +0200
+@@ -495,7 +495,7 @@ gdb.py: hook.in Makefile
+ install-data-local: gdb.py
+ 	@$(mkdir_p) $(DESTDIR)$(toolexeclibdir)
+ 	@here=`pwd`; cd $(DESTDIR)$(toolexeclibdir); \
+-	  for file in libstdc++*; do \
++	  for file in libstdc++gcc*; do \
+ 	    case $$file in \
+ 	      *-gdb.py) ;; \
+ 	      *.la) ;; \
+diff -Nrup gcc-4.6-20120106.orig/libstdc++-v3/src/Makefile.in gcc-4.6-20120106/libstdc++-v3/src/Makefile.in
+--- gcc-4.6-20120106.orig/libstdc++-v3/src/Makefile.in	2014-05-30 13:59:16.000000000 +0200
++++ gcc-4.6-20120106/libstdc++-v3/src/Makefile.in	2014-06-04 13:29:47.599363668 +0200
+@@ -340,7 +340,7 @@ WARN_CXXFLAGS = \
+ AM_CPPFLAGS = $(GLIBCXX_INCLUDES)
+ 
+ # Cross compiler support.
+-toolexeclib_LTLIBRARIES = libstdc++.la
++toolexeclib_LTLIBRARIES = libstdc++gcc.la
+ @ENABLE_SYMVERS_TRUE@CLEANFILES = libstdc++-symbols.ver $(version_dep)
+ @ENABLE_SYMVERS_DARWIN_TRUE@@ENABLE_SYMVERS_TRUE@version_arg = -Wl,-exported_symbols_list,libstdc++-symbols.explist
+ @ENABLE_SYMVERS_FALSE@version_arg = 
+@@ -593,7 +593,7 @@ clean-toolexeclibLTLIBRARIES:
+ 	  echo "rm -f \"$${dir}/so_locations\""; \
+ 	  rm -f "$${dir}/so_locations"; \
+ 	done
+-libstdc++.la: $(libstdc___la_OBJECTS) $(libstdc___la_DEPENDENCIES) 
++libstdc++gcc.la: $(libstdc___la_OBJECTS) $(libstdc___la_DEPENDENCIES) 
+ 	$(libstdc___la_LINK) -rpath $(toolexeclibdir) $(libstdc___la_OBJECTS) $(libstdc___la_LIBADD) $(LIBS)
+ 
+ mostlyclean-compile:

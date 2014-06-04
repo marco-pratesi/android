@@ -1,10 +1,10 @@
---- gcc-4.6-20120106-build/Makefile.orig	2014-05-31 18:24:45.807571562 +0200
-+++ gcc-4.6-20120106-build/Makefile	2014-05-31 19:34:49.471739312 +0200
+--- gcc-4.6-20120106-build/Makefile.orig	2014-06-04 13:44:52.547349538 +0200
++++ gcc-4.6-20120106-build/Makefile	2014-06-04 13:47:04.311347481 +0200
 @@ -471,15 +471,15 @@ do-compare3 = $(do-compare)
  
- AR_FOR_TARGET=arm-linux-androideabi-ar
- AS_FOR_TARGET=arm-linux-androideabi-as
--CC_FOR_TARGET=$(STAGE_CC_WRAPPER) arm-linux-androideabi-cc
+ AR_FOR_TARGET=/opt/android-ndk-r9d/toolchains/arm-linux-androideabi-4.6/prebuilt/linux-x86_64/bin/../lib/gcc/arm-linux-androideabi/4.6/../../../../arm-linux-androideabi/bin/ar
+ AS_FOR_TARGET=/opt/android-ndk-r9d/toolchains/arm-linux-androideabi-4.6/prebuilt/linux-x86_64/bin/../lib/gcc/arm-linux-androideabi/4.6/../../../../arm-linux-androideabi/bin/as
+-CC_FOR_TARGET=$(STAGE_CC_WRAPPER) arm-linux-androideabi-gcc
 +CC_FOR_TARGET=$(STAGE_CC_WRAPPER) arm-linux-androideabi-gcc --sysroot=$(NDK_SYSROOT)
  
  # If GCC_FOR_TARGET is not overriden on the command line, then this
