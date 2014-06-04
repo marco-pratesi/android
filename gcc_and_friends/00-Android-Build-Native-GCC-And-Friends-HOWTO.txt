@@ -149,7 +149,7 @@ About renaming GNU libstdc++...
 This section explains the reasons why the
 gcc-4.6-20120106-android-rename-libstdc++.patch has been applied.
 
-You can refer to docs/CPLUSPLUS-SUPPORT.html from the Android NDK
+You can refer to docs/CPLUSPLUS-SUPPORT.html, available in Android NDK,
 as a starting point.
 Shortly: the /system/lib/libstdc++.so of Android (that comes from Bionic)
 provides very minimal support, not even enough to build and run some simple
