@@ -308,8 +308,8 @@ ls -l drivers/net/usb/mcs7830.ko      # about 10 kbytes after stripping it
 
 Through a program capable of viewing/editing binary files (e.g. VIM),
 open a .ko module in the target system (very likely, in /system/lib/modules)
-and the built module(s), to check if "vermagic=..." is the same;
-it is not and the built modules do not load, go back and try again,
+and the built module(s), to check whether "vermagic=..." is the same;
+if it is not and the built modules do not load, go back and try again,
 changing something accordingly in your build process.
 
 --------------------
