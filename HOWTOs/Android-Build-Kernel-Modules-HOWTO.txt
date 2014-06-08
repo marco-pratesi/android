@@ -28,6 +28,9 @@ building kernel on GNU/Linux before (it is a good idea anyway :-) ).
 There are some documents about cross-compilation of the Linux kernel
 for Android, too; I prepared this HOWTO to collect and organize informations
 relevant to my needs and to support other HOWTOs I want to write.
+This HOWTO also discusses *native* build of kernel modules for Android;
+to the best of my knowledge, at the time of this writing, this is the only
+document facing this topic.
 
 --------------
 Test platforms
@@ -78,6 +81,7 @@ The same suggestion may be useful for suubsequent sections of this document.
 
 ------------------------------------------------------
 Choose a toolchain to cross-compile the kernel sources
+(or, if you are brave enough, use a native compiler)
 ------------------------------------------------------
 
 The best option for compatibility: if it is possible (if it is available),
@@ -108,7 +112,7 @@ Some available toolchains:
 
 Install (i.e. unpack) the toolchain(s) in the directory you prefer.
 
-NOTE: you can also build your modules just on your mobile device,
+Alternatively, you can build your modules just on your mobile device,
 using a native compiler [8] instead of a cross-compiler.
 This option is discussed at the end of this document.
 
@@ -347,9 +351,9 @@ the native compiler to build your stuff :-)
 
 Then follow the steps discussed in this document, skipping what is
 related to cross-build.
-Briefly: unpack your kernel sources, edit the Makefile, and prepare your
-.config, then make your modules.
-Some simple tricks are needed to solve some small problems, as discusses
+Briefly: unpack your kernel sources, edit the Makefile, prepare your .config,
+make your modules, strip them.
+Some simple tricks are needed to solve some minor problems, as discusses
 in the following.
 
 *** 1 ***
