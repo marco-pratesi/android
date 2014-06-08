@@ -1,0 +1,28 @@
+These changes may be found in
+http://www.compdigitec.com/labs/2011/09/04/compiling-bash-for-android-2-x/
+( => http://www.compdigitec.com/labs/files/bash-android.patch )
+
+diff -Nrup bash-4.3.orig/execute_cmd.c bash-4.3/execute_cmd.c
+--- bash-4.3.orig/execute_cmd.c	2014-01-31 16:54:52.000000000 +0100
++++ bash-4.3/execute_cmd.c	2014-06-04 23:01:01.182828543 +0200
+@@ -2369,7 +2369,7 @@ execute_pipeline (command, asynchronous,
+   /* If the `lastpipe' option is set with shopt, and job control is not
+      enabled, execute the last element of non-async pipelines in the
+      current shell environment. */
+-  if (lastpipe_opt && job_control == 0 && asynchronous == 0 && pipe_out == NO_PIPE && prev > 0)
++  if (lastpipe_opt && asynchronous == 0 && pipe_out == NO_PIPE && prev > 0)
+     {
+       lstdin = move_to_high_fd (0, 1, -1);
+       if (lstdin > 0)
+diff -Nrup bash-4.3.orig/lib/sh/oslib.c bash-4.3/lib/sh/oslib.c
+--- bash-4.3.orig/lib/sh/oslib.c	2013-10-14 15:12:57.000000000 +0200
++++ bash-4.3/lib/sh/oslib.c	2014-06-04 23:01:01.182828543 +0200
+@@ -235,7 +235,7 @@ killpg (pgrp, sig)
+ 
+ #if !defined (HAVE_MKFIFO) && defined (PROCESS_SUBSTITUTION)
+ int
+-mkfifo (path, mode)
++mkfifo__ (path, mode)
+      char *path;
+      int mode;
+ {

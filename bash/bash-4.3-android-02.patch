@@ -1,0 +1,39 @@
+These changes may be found in
+https://github.com/CyanogenMod/android_external_bash
+
+diff -Nrup bash-4.3.orig/bashline.c bash-4.3/bashline.c
+--- bash-4.3.orig/bashline.c	2014-02-10 01:56:58.000000000 +0100
++++ bash-4.3/bashline.c	2014-06-04 23:02:52.342826808 +0200
+@@ -2379,7 +2379,7 @@ bash_groupname_completion_function (text
+      const char *text;
+      int state;
+ {
+-#if defined (__WIN32__) || defined (__OPENNT) || !defined (HAVE_GRP_H)
++#if defined (__WIN32__) || defined (__OPENNT) || !defined (HAVE_GRP_H) || defined (__BIONIC__)
+   return ((char *)NULL);
+ #else
+   static char *gname = (char *)NULL;
+diff -Nrup bash-4.3.orig/builtins/common.c bash-4.3/builtins/common.c
+--- bash-4.3.orig/builtins/common.c	2012-02-15 22:44:07.000000000 +0100
++++ bash-4.3/builtins/common.c	2014-06-04 23:02:52.346826808 +0200
+@@ -232,7 +232,7 @@ void
+ sh_invalidnum (s)
+      char *s;
+ {
+-  char *msg;
++  const char *msg;
+ 
+   if (*s == '0' && isdigit (s[1]))
+     msg = _("invalid octal number");
+diff -Nrup bash-4.3.orig/lib/readline/complete.c bash-4.3/lib/readline/complete.c
+--- bash-4.3.orig/lib/readline/complete.c	2013-10-14 15:27:10.000000000 +0200
++++ bash-4.3/lib/readline/complete.c	2014-06-04 23:02:52.346826808 +0200
+@@ -2167,7 +2167,7 @@ rl_username_completion_function (text, s
+      const char *text;
+      int state;
+ {
+-#if defined (__WIN32__) || defined (__OPENNT)
++#if defined (__WIN32__) || defined (__OPENNT) || defined (__BIONIC__)
+   return (char *)NULL;
+ #else /* !__WIN32__ && !__OPENNT) */
+   static char *username = (char *)NULL;

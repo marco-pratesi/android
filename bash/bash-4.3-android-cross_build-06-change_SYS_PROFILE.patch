@@ -1,0 +1,12 @@
+diff -Nrup bash-4.3.orig/pathnames.h.in bash-4.3/pathnames.h.in
+--- bash-4.3.orig/pathnames.h.in	2009-01-04 20:32:40.000000000 +0100
++++ bash-4.3/pathnames.h.in	2014-06-07 12:52:37.629095379 +0200
+@@ -25,7 +25,7 @@
+ #define DEFAULT_HOSTS_FILE "/etc/hosts"
+ 
+ /* The default login shell startup file. */
+-#define SYS_PROFILE "/etc/profile"
++#define SYS_PROFILE "/system/etc/bash_profile"
+ 
+ /* The default location of the bash debugger initialization/startup file. */
+ #define DEBUGGER_START_FILE	"@DEBUGGER_START_FILE@"

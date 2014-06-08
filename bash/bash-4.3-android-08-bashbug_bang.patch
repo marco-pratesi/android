@@ -1,0 +1,9 @@
+diff -Nrup bash-4.3.orig/support/bashbug.sh bash-4.3/support/bashbug.sh
+--- bash-4.3.orig/support/bashbug.sh	2009-12-28 04:53:48.000000000 +0100
++++ bash-4.3/support/bashbug.sh	2014-06-08 22:15:51.675222987 +0200
+@@ -1,4 +1,4 @@
+-#!/bin/sh -
++#!/system/bin/sh -
+ #
+ # bashbug - create a bug report and mail it to the bug address
+ #

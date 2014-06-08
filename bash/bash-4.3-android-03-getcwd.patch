@@ -1,0 +1,51 @@
+
+Reference:
+https://github.com/CyanogenMod/android_external_bash
+
+Why this patch?
+
+In http://dan.drown.org/android/src/bash/getcwd-broken it is stated
+that the Bionic implementation of getcwd() does not behave correctly
+if the first argument is NULL.
+
+The change log of
+https://code.google.com/p/android-source-browsing/source/browse/libc/bionic/getcwd.cpp?repo=platform--bionic&r=04a83a48ed89f433c78e31106ed50059764797a0
+states that, as of Aug 16, 2012, getcwd() can handle NULL like glibc.
+
+Another reference that confirms the above two statements:
+http://code.google.com/p/android/issues/detail?id=36085
+
+Hence I guess that this patch is needed only for Android versions
+that are not recent enough, likely for Android < 4.1.2.
+
+diff -Nrup bash-4.3.orig/builtins/common.c bash-4.3/builtins/common.c
+--- bash-4.3.orig/builtins/common.c	2012-02-15 22:44:07.000000000 +0100
++++ bash-4.3/builtins/common.c	2014-06-04 23:04:55.814824880 +0200
+@@ -553,10 +553,25 @@ get_working_directory (for_whom)
+ 
+   if (the_current_working_directory == 0)
+     {
+-#if defined (GETCWD_BROKEN)
+-      the_current_working_directory = getcwd (0, PATH_MAX);
++#if defined (__BIONIC__)
++      /**
++       * This is a really lame work around to try to stop bash from flipping
++       * out if PWD isn't defined when starting it up on bionic
++       */
++      char *d = (char *)malloc(sizeof(char) * PATH_MAX);
++      if (d) {
++        the_current_working_directory = getcwd (d, sizeof(char) * PATH_MAX);
++        if (the_current_working_directory)
++          the_current_working_directory = d;
++        else
++          FREE (d);
++      }
+ #else
++# if defined (GETCWD_BROKEN)
++      the_current_working_directory = getcwd (0, PATH_MAX);
++# else
+       the_current_working_directory = getcwd (0, 0);
++# endif
+ #endif
+       if (the_current_working_directory == 0)
+ 	{

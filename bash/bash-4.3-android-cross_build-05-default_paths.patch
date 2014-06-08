@@ -1,0 +1,33 @@
+diff -Nrup bash-4.3.orig/config-top.h bash-4.3/config-top.h
+--- bash-4.3.orig/config-top.h	2012-08-19 02:51:30.000000000 +0200
++++ bash-4.3/config-top.h	2014-06-04 23:16:38.510813908 +0200
+@@ -59,14 +59,14 @@
+ /* The default value of the PATH variable. */
+ #ifndef DEFAULT_PATH_VALUE
+ #define DEFAULT_PATH_VALUE \
+-  "/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin:/sbin:."
++  "/data/local/bin:/data/local/xbin:/system/bin:/system/xbin:."
+ #endif
+ 
+ /* The value for PATH when invoking `command -p'.  This is only used when
+    the Posix.2 confstr () function, or CS_PATH define are not present. */
+ #ifndef STANDARD_UTILS_PATH
+ #define STANDARD_UTILS_PATH \
+-  "/bin:/usr/bin:/sbin:/usr/sbin:/etc:/usr/etc"
++  "/system/bin:/system/xbin:/etc:/system/etc:/data/local/etc"
+ #endif
+ 
+ /* Default primary and secondary prompt strings. */
+@@ -80,10 +80,10 @@
+ #define KSH_COMPATIBLE_SELECT
+ 
+ /* System-wide .bashrc file for interactive shells. */
+-/* #define SYS_BASHRC "/etc/bash.bashrc" */
++#define SYS_BASHRC "/system/etc/bash.bashrc"
+ 
+ /* System-wide .bash_logout for login shells. */
+-/* #define SYS_BASH_LOGOUT "/etc/bash.bash_logout" */
++#define SYS_BASH_LOGOUT "/system/etc/bash.bash_logout"
+ 
+ /* Define this to make non-interactive shells begun with argv[0][0] == '-'
+    run the startup files when not in posix mode. */

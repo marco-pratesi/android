@@ -1,0 +1,79 @@
+
+References:
+- http://www.compdigitec.com/labs/2011/09/04/compiling-bash-for-android-2-x/
+  ( => http://www.compdigitec.com/labs/files/bash-android.patch )
+- https://github.com/CyanogenMod/android_external_bash
+- The Debian/Ubuntu build of bash.
+
+Set the environment variables needed to use Android NDK as explained
+in 00_NOTES-env_for_cross_compiling.txt (in the root of the repository).
+
+Building against the ncurses library makes bash more comfortable;
+hence, following the corresponding documentation available in this repository:
+- on the build system, build ncurses, following instructions at least
+  until the "make install" step
+- on the target system, install the ncurses package
+To match directories where ncurses-5.9 has been "cross-installed":
+export LDFLAGS=-L/system/lib
+export CPPFLAGS=-I/foobar/include/ncurses
+
+Go to your build directory.
+tar xf bash-4.3.tar.gz ; cd bash-4.3
+Apply the following patches through the "patch -p1 < ..." command:
+bash-4.3-android-01.patch
+bash-4.3-android-02.patch
+bash-4.3-android-03-getcwd.patch
+bash-4.3-android-07-endpwent_warning_and_default_bin_sh.patch
+bash-4.3-android-08-bashbug_bang.patch
+bash-4.3-android-cross_build-05-default_paths.patch
+bash-4.3-android-cross_build-06-change_SYS_PROFILE.patch
+
+conf_args=" \
+ --host=arm-linux \
+ --prefix=/foobar \
+ --bindir=/system/xbin \
+ --sysconfdir=/system/etc \
+ --disable-nls \
+ --with-curses"
+static_conf_args="$conf_args \
+ --enable-static-link \
+ --without-bash-malloc"
+./configure $static_conf_args
+make
+make install
+mv /system/xbin/bash /system/xbin/bash-static
+$STRIP /system/xbin/bash-static
+make clean
+./configure $conf_args
+make
+make install
+mv /system/xbin/bash /system/xbin/bash-dynamic
+$STRIP /system/xbin/bash-dynamic
+( cd /system/xbin ; ln -s bash-static bash )
+
+tar cf bash-4.3-arm.tar \
+/system/xbin/bash*
+#/system/usr/share/locale
+
+Care is needed to install bash-4.3-arm.tar on the target device, as another
+vesion of bash may be preinstalled.
+Refer to other documentation in this repository (about VIM, as an example)
+for suggestions and recommendations about installing without causing problems.
+
+For /system/etc/bash.bashrc and /system/etc/bash.bash_logout,
+you can refer to
+https://github.com/CyanogenMod/android_external_bash/tree/cm-10.2/etc
+as a starting point.
+I suggest to add the following alias to /system/etc/bash.bashrc:
+alias su='su -c /data/local/bin/bash'
+
+NOTES...
+********
+Android does not provide a complete locale support.
+However, if you want to try it, remove the --disable-nls configure option,
+add the option --datarootdir=/system/usr/share and "make install" will put
+locale related files in /system/usr/share/locale
+********
+Remove the --with-curses configure option if you want to build bash without
+the ncurses library.
+

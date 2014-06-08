@@ -1,0 +1,70 @@
+
+This build is performed through a native GCC for Android:
+https://github.com/marco-pratesi/android/tree/master/gcc_and_friends
+
+Building against the ncurses library makes bash more comfortable;
+hence, build and install ncurses following the corresponding documentation
+available in this repository.
+
+mount -o remount,rw /
+
+Use /data/local/bin/sh -> /data/local/bin/mksh, whose build is documented
+in https://github.com/marco-pratesi/android/tree/master/mksh
+( If you use /system/bin/sh -> /system/bin/mksh instead, you may have
+  to do something like
+  ln -s /sdcard/tmp /sqlite_stmt_journals
+)
+To let /bin/sh and /tmp be available and avoid patching some scripts:
+mkdir -p /sdcard/tmp
+ln -s /data/local/bin /bin ; ln -s /sdcard/tmp /tmp
+
+mount -o remount,ro /
+
+The /bin and /tmp symbolic links will not be persistent: they will not survive
+the reboot.
+
+Go to your build directory.
+tar xf bash-4.3.tar.gz ; cd bash-4.3
+Apply the following patches through the "patch -p1 < ..." command:
+bash-4.3-android-01.patch
+bash-4.3-android-02.patch
+bash-4.3-android-03-getcwd.patch
+bash-4.3-android-07-endpwent_warning_and_default_bin_sh.patch
+bash-4.3-android-08-bashbug_bang.patch
+bash-4.3-android-native_build-01.patch
+bash-4.3-android-native_build-05-default_paths.patch
+bash-4.3-android-native_build-06-change_SYS_PROFILE.patch
+
+conf_args=" \
+ --prefix=/data/local \
+ --disable-nls \
+ --with-curses"
+static_conf_args="$conf_args \
+ --enable-static-link \
+ --without-bash-malloc"
+./configure $static_conf_args
+make ; make install
+mv /data/local/bin/bash /data/local/bin/bash-static
+make clean
+./configure $conf_args
+make
+cp bash /data/local/bin/bash-dynamic
+( cd /data/local/bin/ ; \
+  strip bash* ; chown root.root bash* ; chmod 755 bash* ; \
+  ln -s bash-static bash )
+
+For /data/local/etc/bash.bashrc and /data/local/etc/bash.bash_logout,
+you can refer to
+https://github.com/CyanogenMod/android_external_bash/tree/cm-10.2/etc
+as a starting point.
+I suggest to add the following statements to /data/local/etc/bash.bashrc:
+
+#if [[ ${EUID} == 0 ]]; then HOME=/data/local/root; else HOME=/sdcard/$USER; fi
+if [[ ${EUID} == 0 ]]; then HOME=/data; else HOME=/sdcard; fi
+export HOME
+alias su='su -c /data/local/bin/bash'
+#cd $HOME
+
+To know the reasons why I suggest this setting of HOME, you can refer to
+the documentation in https://github.com/marco-pratesi/android/tree/master/mksh
+

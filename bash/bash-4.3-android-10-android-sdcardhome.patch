@@ -1,0 +1,40 @@
+Apply this patch if you want that bash sets HOME = /sdcard/[username]
+and you do not want to set HOME through bashrc files.
+
+diff -Nrup bash-4.3.orig/shell.c bash-4.3/shell.c
+--- bash-4.3.orig/shell.c	2014-01-14 14:04:32.000000000 +0100
++++ bash-4.3/shell.c	2014-06-04 23:19:21.846811358 +0200
+@@ -83,6 +83,11 @@
+ #  include <opennt/opennt.h>
+ #endif
+ 
++#include <sys/param.h>
++#include <sys/types.h>
++#include <sys/stat.h>
++#include <stdlib.h>
++
+ #if !defined (HAVE_GETPW_DECLS)
+ extern struct passwd *getpwuid ();
+ #endif /* !HAVE_GETPW_DECLS */
+@@ -1695,6 +1700,9 @@ shell_initialize ()
+ {
+   char hostname[256];
+ 
++  char sdcardhome[MAXPATHLEN];
++  struct passwd *pwd;
++
+   /* Line buffer output for stderr and stdout. */
+   if (shell_initialized == 0)
+     {
+@@ -1741,6 +1749,11 @@ shell_initialize ()
+   initialize_shell_variables (shell_environment, privileged_mode||running_setuid);
+ #endif
+ 
++  pwd = getpwuid(getuid());
++  snprintf(sdcardhome, MAXPATHLEN, "/sdcard/%s", pwd->pw_name);
++  mkdir((const char *) sdcardhome, 0700);
++  setenv("HOME", sdcardhome, 1);
++
+   /* Initialize the data structures for storing and running jobs. */
+   initialize_job_control (jobs_m_flag);
+ 

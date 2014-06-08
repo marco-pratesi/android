@@ -1,0 +1,28 @@
+The change to disable endpwent() may be found in
+https://github.com/CyanogenMod/android_external_bash/tree/cm-11.0
+
+diff -Nrup bash-4.3.orig/shell.c bash-4.3/shell.c
+--- bash-4.3.orig/shell.c	2014-01-14 14:04:32.000000000 +0100
++++ bash-4.3/shell.c	2014-06-04 23:18:22.134812290 +0200
+@@ -1674,17 +1674,19 @@ get_current_user_info ()
+ 	  current_user.user_name = savestring (entry->pw_name);
+ 	  current_user.shell = (entry->pw_shell && entry->pw_shell[0])
+ 				? savestring (entry->pw_shell)
+-				: savestring ("/bin/sh");
++				: savestring ("/system/bin/sh");
+ 	  current_user.home_dir = savestring (entry->pw_dir);
+ 	}
+       else
+ 	{
+ 	  current_user.user_name = _("I have no name!");
+ 	  current_user.user_name = savestring (current_user.user_name);
+-	  current_user.shell = savestring ("/bin/sh");
++	  current_user.shell = savestring ("/system/bin/sh");
+ 	  current_user.home_dir = savestring ("/");
+ 	}
++#if defined (HAVE_GETPWENT)
+       endpwent ();
++#endif
+     }
+ }
+ 

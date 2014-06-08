@@ -1,0 +1,12 @@
+diff -Nrup bash-4.3.orig/y.tab.c bash-4.3/y.tab.c
+--- bash-4.3.orig/y.tab.c	2014-02-11 16:57:47.000000000 +0100
++++ bash-4.3/y.tab.c	2014-06-07 12:36:24.741110569 +0200
+@@ -280,7 +280,7 @@ extern sh_builtin_func_t *last_shell_bui
+ extern int bash_input_fd_changed;
+ #endif
+ 
+-extern int errno;
++//extern int errno;
+ /* **************************************************************** */
+ /*								    */
+ /*		    "Forward" declarations			    */

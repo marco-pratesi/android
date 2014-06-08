@@ -1,0 +1,15 @@
+Author: Pierre Chifflier
+Description: Fix build error with -Werror=format-security hardening flag.
+
+diff -Nrup bash-4.2.orig/print_cmd.c bash-4.2/print_cmd.c
+--- bash-4.2.orig/print_cmd.c	2010-05-31 00:34:08.000000000 +0200
++++ bash-4.2/print_cmd.c	2014-06-04 22:20:42.878866301 +0200
+@@ -1391,7 +1391,7 @@ indent (amount)
+   for (i = 0; amount > 0; amount--)
+     indentation_string[i++] = ' ';
+   indentation_string[i] = '\0';
+-  cprintf (indentation_string);
++  cprintf ("%s", indentation_string);
+ }
+ 
+ static void
