@@ -45,7 +45,7 @@ Build a kernel module to drive the USB-LAN adapter
 If you already use the adapter on GNU/Linux, very likely you can use is
 on Android, too, as Android is based on the Linux kernel.
 Check which kernel module drives your adapter on GNU/Linux, then
-refer to Android-Building-Kernel-Modules-HOWTO.txt for compilation
+refer to Android-Build-Kernel-Modules-HOWTO.txt for compilation
 of the same kernel module for Android.
 
 The adapter I tested relies on the mcs7830.ko kernel module,
@@ -58,7 +58,7 @@ Connect the adapter, load the module, configure IP addressing
 -------------------------------------------------------------
 
 Load the module through either insmod or modprobe, as explained in
-Android-Building-Kernel-Modules-HOWTO.txt
+Android-Build-Kernel-Modules-HOWTO.txt
 
 If the module loads fine, plug the USB OTG cable and the USB-LAN adapter,
 as explained in Android-USB-Serial-Connection-HOWTO.txt

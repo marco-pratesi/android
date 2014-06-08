@@ -144,7 +144,7 @@ To summarize: rebuilding the kernel may be needed if (to check whether)
 your device provides hardware USB OTG capability but (and) its software
 does not support it.
 You mileage may vary, a general and exhaustive discussion is not possible.
-The Android-Building-Kernel-Modules-HOWTO.txt document may be helpful;
+The Android-Build-Kernel-Modules-HOWTO.txt document may be helpful;
 furthermore, you may search for hints in the .config of a kernel supporting
 USB OTG, as an example:
 https://github.com/CyanogenMod/android_kernel_asus_grouper/blob/cm-10.1/arch/arm/configs/cyanogenmod_grouper_defconfig
@@ -182,7 +182,7 @@ but I discommend this:
   without encumbering the RAM when you do not need it.
 
 To build the ftdi_sio.ko module, you can refer to
-Android-Building-Kernel-Modules-HOWTO.txt
+Android-Build-Kernel-Modules-HOWTO.txt
 
 Once ftdi_sio.ko is built, copy it to the target device and load it
 through either insmod or modprobe.
