@@ -1,0 +1,83 @@
+
+This build is performed through a native GCC for Android:
+https://github.com/marco-pratesi/android/tree/master/gcc_and_friends
+
+The original source code can be found at
+https://www.mirbsd.org/mksh.htm =>
+https://www.mirbsd.org/MirOS/dist/mir/mksh/mksh-R49.tgz
+http://pub.allbsd.org/MirOS/dist/mir/mksh/mksh-R49.tgz
+
+Put mksh-R49.tgz and mksh-R49-android.patch in your build directory.
+
+tar xf mksh-R49.tgz ; mv mksh mksh-R49 ; cd mksh-R49
+export LDFLAGS=-static
+patch -p1 < ../mksh-R49-android.patch
+sh Build.sh
+strip mksh
+mkdir -p /sdcard/tmp
+mkdir -p /data/local/bin
+mkdir -p /data/local/etc
+chown root.root /data/local/bin /data/local/etc
+chmod 755 /data/local/bin /data/local/etc
+cp mksh /data/local/bin
+( cd /data/local/bin ; ln -sf mksh sh )
+touch /data/local/etc/mkshrc
+chown root.root /data/local/bin/mksh
+chmod 755 /data/local/bin/mksh
+chmod 644 /data/local/etc/mkshrc
+
+I suggest to add the following statements to /data/local/etc/mkshrc:
+
+#if (( USER_ID )); then HOME=/sdcard/$USER; else HOME=/data/local/root; fi
+if (( USER_ID )); then HOME=/sdcard; else HOME=/data; fi
+export HOME
+HISTFILE=$HOME/.mksh_history
+HISTSIZE=1000
+export HISTFILE HISTSIZE
+alias su='su -c /data/local/bin/mksh'
+[[ -s $HOME/.mkshrc ]] && . $HOME/.mkshrc
+#cd $HOME
+export PWD
+
+About setting HOME
+------------------
+It may happen that a non-root user has a non completely accessible directory
+as its HOME.
+As an example, "/" is not writable (even though the root user can temporarily
+remount it as rw) and /data is not writable and not listable for non-root users.
+To allow normal operation of programs that expect they can write in HOME,
+I prefer to be sure that HOME is set to (a subdir of) /sdcard for non-root users
+and to (a subdir of) /data for the root.
+As an example, on the Nexus 7 GSM 2012 with Cyanogenmod 10.1.3, HOME
+is set by default to "/data" if I access through "adb shell", i.e.
+with the "shell" user (uid=2000(shell)), and IMHO this is not comfortable.
+By the way, setting HOME to /sdcard for all non-root users may be useful
+because, with the particular management of users implemented by Android,
+different identities are assumed, depending on which program you run
+to access the shell.
+As an example, different users are associated to the shell when it runs from:
+- Android Terminal Emulator
+- JS Terminal
+- ADB shell
+Even when I am not root, I prefer to access just the same history of shell
+commands and the same settings from wherever I run the shell, hence
+I set HOME to /sdcard for *all* non-root users.
+
+About "export"ing PWD
+---------------------
+In some cases, errors may occur when launching bash if all the following
+conditions hold true:
+- you access the device through "adb shell" (==> uid=2000(shell) in my case)
+- mksh is the shell provided for such access
+- you are in a particular directory
+  (/sdcard, as an example, but it occurs for other directories, too)
+- PWD has not been "export"ed by mksh
+- you launch a statically linked bash from mksh
+This is an example of errors occurring for bash in such a case:
+------------------------------
+shell-init: error retrieving current directory: getcwd: cannot access parent directories: Unknown error: 0
+sh_makepath: error retrieving current directory: getcwd: cannot access parent directories: No such file or directory
+------------------------------
+It seems that explicitly "export"ing PWD in mksh fixes this rare and weird
+problem (at least, it works for me).
+

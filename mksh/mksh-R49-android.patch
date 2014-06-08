@@ -1,0 +1,61 @@
+diff -Nrup mksh-R49.orig/exec.c mksh-R49/exec.c
+--- mksh-R49.orig/exec.c	2014-01-11 17:26:52.000000000 +0100
++++ mksh-R49/exec.c	2014-06-07 11:13:39.357188095 +0200
+@@ -26,7 +26,7 @@
+ __RCSID("$MirOS: src/bin/mksh/exec.c,v 1.129 2014/01/11 16:26:27 tg Exp $");
+ 
+ #ifndef MKSH_DEFAULT_EXECSHELL
+-#define MKSH_DEFAULT_EXECSHELL	"/bin/sh"
++#define MKSH_DEFAULT_EXECSHELL	"/data/local/bin/sh"
+ #endif
+ 
+ static int comexec(struct op *, struct tbl * volatile, const char **,
+diff -Nrup mksh-R49.orig/main.c mksh-R49/main.c
+--- mksh-R49.orig/main.c	2014-01-11 19:10:05.000000000 +0100
++++ mksh-R49/main.c	2014-06-07 11:22:27.149179855 +0200
+@@ -39,11 +39,11 @@ __RCSID("$MirOS: src/bin/mksh/main.c,v 1
+ extern char **environ;
+ 
+ #ifndef MKSHRC_PATH
+-#define MKSHRC_PATH	"~/.mkshrc"
++#define MKSHRC_PATH	"/data/local/etc/mkshrc"
+ #endif
+ 
+ #ifndef MKSH_DEFAULT_TMPDIR
+-#define MKSH_DEFAULT_TMPDIR	"/tmp"
++#define MKSH_DEFAULT_TMPDIR	"/sdcard/tmp"
+ #endif
+ 
+ static uint8_t isuc(const char *);
+@@ -628,7 +628,7 @@ main_init(int argc, const char *argv[],
+ 	if (Flag(FLOGIN)) {
+ 		include(MKSH_SYSTEM_PROFILE, 0, NULL, true);
+ 		if (!Flag(FPRIVILEGED))
+-			include(substitute("$HOME/.profile", 0), 0,
++			include(substitute("$HOME/.mksh_profile", 0), 0,
+ 			    NULL, true);
+ 	}
+ 	if (Flag(FPRIVILEGED))
+diff -Nrup mksh-R49.orig/sh.h mksh-R49/sh.h
+--- mksh-R49.orig/sh.h	2014-01-11 19:10:07.000000000 +0100
++++ mksh-R49/sh.h	2014-06-07 11:13:39.365188095 +0200
+@@ -1007,15 +1007,15 @@ EXTERN mksh_ari_t x_lins E_INIT(24);	/*
+ /* Determine the location of the system (common) profile */
+ 
+ #ifndef MKSH_DEFAULT_PROFILEDIR
+-#if defined(ANDROID)
+-#define MKSH_DEFAULT_PROFILEDIR	"/system/etc"
++#if defined(__BIONIC__)
++#define MKSH_DEFAULT_PROFILEDIR	"/data/local/etc"
+ #else
+ #define MKSH_DEFAULT_PROFILEDIR	"/etc"
+ #endif
+ #endif
+ 
+-#define MKSH_SYSTEM_PROFILE	MKSH_DEFAULT_PROFILEDIR "/profile"
+-#define MKSH_SUID_PROFILE	MKSH_DEFAULT_PROFILEDIR "/suid_profile"
++#define MKSH_SYSTEM_PROFILE	MKSH_DEFAULT_PROFILEDIR "/mksh_profile"
++#define MKSH_SUID_PROFILE	MKSH_DEFAULT_PROFILEDIR "/mksh_suid_profile"
+ 
+ 
+ /* Used by v_evaluate() and setstr() to control action when error occurs */
