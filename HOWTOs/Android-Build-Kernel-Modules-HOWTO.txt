@@ -81,7 +81,7 @@ The same suggestion may be useful for suubsequent sections of this document.
 
 ------------------------------------------------------
 Choose a toolchain to cross-compile the kernel sources
-(or, if you are brave enough, use a native compiler)
+(or use a native compiler, if you are brave enough)
 ------------------------------------------------------
 
 The best option for compatibility: if it is possible (if it is available),
