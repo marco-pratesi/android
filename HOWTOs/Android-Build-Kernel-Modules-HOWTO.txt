@@ -49,10 +49,6 @@ once, but such annoying behaviors persisted, and I can not tolerate being
 uncomfortable with the only true user interface, i.e. the shell terminal. :-)
 Then I went back to 10.1.3 and carried out all the work on it.
 
-NOTE: Cyanogenmod 10.1.3 and 10.2.1 did not load modules I built
-with Android NDK; the following error message was returned by insmod:
-ftdi_sio: unknown relocation: 27
-
 ------------------------
 Get Linux kernel sources
 ------------------------
@@ -111,6 +107,10 @@ Some available toolchains:
 - the Android Native Development Kit (NDK) [3]
 
 Install (i.e. unpack) the toolchain(s) in the directory you prefer.
+
+NOTE: you can also build your modules just on your mobile device,
+using a native compiler [8] instead of a cross-compiler.
+This option is discussed at the end of this document.
 
 ----------------------------------------------------
 Set environment variables according to the toolchain
@@ -185,8 +185,9 @@ cd android_kernel_asus_grouper-cm-10.1
 
 The kernel may refuse loading modules if the vermagic does not match,
 thus edit the Makefile to set KERNELRELEASE just according to it [1].
-To find the exact target kernel version string, you may either run "uname -a"
-on the Android Terminal Emulator, or look for informations about the system
+To find the exact target kernel version string, you may either run
+"uname -a" / "cat /proc/version" on a shell terminal (Android Terminal
+Emulator / ADB shell / ...), or look for informations about the system
 (Kernel version) in the Setting GUI/Application.
 Examples about Google Nexus 7 2012 GSM (tilapia):
 Settings => About tablet => Kernel version:
@@ -277,6 +278,19 @@ cores to be used on the build platform [1], e.g. "make -j2 ..." on a dual-core
 netbook; anyway, if you only have to build a few modules, this option
 is almost insignificant.)
 
+NOTE: Cyanogenmod 10.1.3 and 10.2.1 did not load modules I built
+with Android NDK; the following error messages were provided:
+------------------------------
+# insmod ftdi_sio.ko                        
+insmod: can't insert 'ftdi_sio.ko': invalid module format
+# dmesg | tail
+[...]
+[...] ftdi_sio: unknown relocation: 27
+------------------------------
+The CFLAGS_MODULE=-fno-pic option solved the problem [7]:
+make CFLAGS_MODULE=-fno-pic M=drivers/usb/serial/
+make CFLAGS_MODULE=-fno-pic M=drivers/net/usb/
+
 Strip modules to remove unneded symbols and save memory on the target device
 that will run them:
 ${CROSS_COMPILE}strip --strip-debug [path]/[just_built_module].ko
@@ -317,6 +331,109 @@ and then search the web for the problem you are experiencing; an exhaustive
 discussion of all possible cases is not possible, you mileage may vary,
 I can only wish you good luck :-)
 
+--------------------------------------------------
+HOWTO build your modules through a native compiler
+--------------------------------------------------
+
+You can build your modules just on your mobile device using a native
+compiler, whose installation is discussed in [8], i.e. you can natively
+build your modules just on your (target) mobile device, instead of
+cross compiling them.
+
+First step: build and install a native compiler as discussed in [8].
+Yes, you need a cross-compiler - namely Android NDK - to build your
+native compiler :-D but you need it only once: subsequently, you can use
+the native compiler to build your stuff :-)
+
+Then follow the steps discussed in this document, skipping what is
+related to cross-build.
+Briefly: unpack your kernel sources, edit the Makefile, and prepare your
+.config, then make your modules.
+Some simple tricks are needed to solve some small problems, as discusses
+in the following.
+
+*** 1 ***
+
+"make modules_prepare" fails, because the "elf.h" available in Android NDK
+(i.e. the one used by the native compiler [8]) is not enough.
+To overcome this problem, copy in the scripts/mod/ directory of the kernel
+sources tree the "elf.h" available in Glibc.
+You can easily find it: you can just copy /usr/include/elf.h from a GNU/Linux
+installation (I used the one available in GNU/Linux Ubuntu 14.04 x86_64).
+Edit scripts/mod/elf.h to remove inclusion of <bits/auxv.h>, as it is
+not available in Android NDK and is not needed:
+diff -up scripts/mod/elf.h.orig scripts/mod/elf.h
+------------------------------
+--- scripts/mod/elf.h.orig
++++ scripts/mod/elf.h
+@@ -972,7 +972,7 @@
+     } a_un;
+ } Elf64_auxv_t;
+
+-#include <bits/auxv.h>
++//#include <bits/auxv.h>
+ /* Note section contents.  Each entry in the note section begins with
+    a header of a fixed form.  */
+
+------------------------------
+
+Then edit scripts/mod/modpost.h to include just scripts/mod/elf.h:
+diff -up scripts/mod/modpost.h.orig scripts/mod/modpost.h
+------------------------------
+--- scripts/mod/modpost.h.orig
++++ scripts/mod/modpost.h
+@@ -7,7 +7,7 @@
+ #include <sys/mman.h>
+ #include <fcntl.h>
+ #include <unistd.h>
+-#include <elf.h>
++#include "elf.h"
+
+ #include "elfconfig.h"
+
+------------------------------
+
+*** 2 ***
+
+Just as for cross-compilation of modules through Android NDK,
+the CFLAGS_MODULE=-fno-pic may be needed to avoid relocation errors
+when loading the modules [7]: as an example,
+make CFLAGS_MODULE=-fno-pic M=drivers/usb/serial/
+make CFLAGS_MODULE=-fno-pic M=drivers/net/usb/
+
+*** 3 ***
+
+"make menuconfig" and "make nconfig" fail if ncurses headers are not found,
+i.e. if they are either not available or installed in a "non-standard"
+directory; to solve this problem, edit scripts/kconfig/Makefile to add
+an include path: as an example,
+diff -up scripts/kconfig/Makefile.orig scripts/kconfig/Makefile
+------------------------------
+--- scripts/kconfig/Makefile.orig
++++ scripts/kconfig/Makefile
+@@ -147,7 +147,7 @@
+ # Use recursively expanded variables so we do not call gcc unless
+ # we really need to do so. (Do not call gcc as part of make mrproper)
+ HOST_EXTRACFLAGS += $(shell $(CONFIG_SHELL) $(check-lxdialog) -ccflags) \
+-                    -DLOCALE
++                    -DLOCALE -I/data/local/include/ncurses
+
+ # ===========================================================================
+ # Shared Makefile for the various kconfig executables:
+------------------------------
+where /data/local/include/ncurses is the directory containing curses.h
+
+I successfully used "make menuconfig" and "make nconfig" both via the ADB shell
+and on the Android Terminal Emulator, but please note that your terminal
+must provide at least
+- 19 lines by 80 columns to run "make menuconfig"
+- 20 lines and 75 columns to run "make nconfig"
+hence you may have to set small fonts on the Android Terminal Emulator,
+especially if the screen must provide room for the virtual keyboard, too.
+Via ADB, I experienced some "refresh" problems with "make menuconfig",
+however they can be almost completely solved through a suited setting
+of the TERM environment variable and they do not prevent usage of the tool.
+
 ----------
 References
 ----------
@@ -327,4 +444,6 @@ References
 [4] http://www.pixelbeat.org/docs/rebuild_kernel_module.html
 [5] http://askubuntu.com/questions/168279/how-do-i-build-a-single-in-tree-kernel-module
 [6] http://www.linuxquestions.org/questions/linux-kernel-70/rebuilding-a-single-kernel-module-595116/#post3648679
+[7] http://stackoverflow.com/questions/11614441/hello-world-kernel-module-for-android-unknown-relocation-27-when-insmod
+[8] https://github.com/marco-pratesi/android/tree/master/gcc_and_friends
 
