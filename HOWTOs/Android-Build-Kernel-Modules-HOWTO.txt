@@ -241,8 +241,8 @@ Even though you are cross-compiling, you can also use "make menuconfig":
 as an example, to build the ftdi_sio.ko and mcs7830.ko modules:
 
 Device Drivers ---> USB support ---> 
-                     ^^^^^^^^^^^^^^^^ check that host-side and OTG support are enabled...
-                     ^^^^^^^^^^^^^^^^ very interesting: USB Gadget Support (http://www.linux-usb.org/gadget)
+                    ^^^^^^^^^^^^^^^^ check that host-side and OTG support are enabled...
+                    ^^^^^^^^^^^^^^^^ very interesting: USB Gadget Support (http://www.linux-usb.org/gadget)
 *** USB port drivers ***
 USB Serial Converter support ---> 
 <M>   USB FTDI Single Port Serial Driver (CONFIG_USB_SERIAL_FTDI_SIO)
