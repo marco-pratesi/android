@@ -1,7 +1,13 @@
 
-ncurses-NOTES-5.9.txt
----------------------
-How to build and install ncurses for Android.
+ncurses-5.9-android-cross_build-HOWTO.txt
+-----------------------------------------
+How to build ncurses for Android through the NDK cross-compiler and install it.
+
+ncurses-5.9-android-native_build-HOWTO.txt
+------------------------------------------
+How to build ncurses through a native GCC for Android
+( https://github.com/marco-pratesi/android/tree/master/gcc_and_friends )
+and install it.
 
 ncurses-5.9-android.patch
 -------------------------

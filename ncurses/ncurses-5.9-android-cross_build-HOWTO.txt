@@ -1,5 +1,5 @@
 
-Set the needed environment variables as explained
+Set the environment variables needed to use Android NDK as explained
 in 00_NOTES-env_for_cross_compiling.txt (in the root of the repository).
 
 wget http://ftp.gnu.org/gnu/ncurses/ncurses-5.9.tar.gz

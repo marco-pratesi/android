@@ -1,0 +1,39 @@
+
+This build is performed through a native GCC for Android:
+https://github.com/marco-pratesi/android/tree/master/gcc_and_friends
+
+Put the ncurses-5.9.tar.gz sources and ncurses-5.9-android.patch in your
+build directory.
+
+tar xf ncurses-5.9.tar.gz ; cd ncurses-5.9
+patch -p1 < ../ncurses-5.9-android.patch
+
+PREFIX=/data/local
+
+./configure \
+ --prefix=$PREFIX \
+ --mandir=$PREFIX/share/man \
+ --with-shared \
+ --without-cxx \
+ --without-cxx-binding \
+ --without-cxx-shared \
+ --without-ada \
+ --with-progs \
+ --without-tests \
+ --with-default-terminfo-dir=$PREFIX/etc/terminfo \
+ --with-terminfo-dirs="$PREFIX/etc/terminfo:$PREFIX/lib/terminfo:$PREFIX/share/terminfo"
+# --with-cxx \
+# --with-cxx-binding \
+# --with-cxx-shared \
+# --without-progs \
+# --with-tests \
+## --datarootdir=$PREFIX/share \
+# NOTE: the build of cxx (i.e. C++) code is disabled,
+# but it works and you can enable it if you want.
+
+make
+make install
+
+( cd $PREFIX/bin ; strip clear infocmp ncurses5-config tabs tic toe tput tset )
+( cd $PREFIX/lib ; strip --strip-unneeded libform.so* libmenu.so* libncurses.so* libpanel.so* )
+
