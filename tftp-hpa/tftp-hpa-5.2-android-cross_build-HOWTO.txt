@@ -24,9 +24,9 @@ NOTE: if you want to use "make -e" instead of "make", then unset
 the environment variable AR:
 unset AR
 
-Usually, rooted Android systems provide busybox with tftp and tftpd applets
-enabled: very likely, on the target system, /system/xbin/tftp
-and /system/xbin/tftpd are symbolic links to /system/xbin/busybox.
+Rooted Android systems may provide busybox with tftp and tftpd applets enabled: 
+on the target system, /system/xbin/tftp and /system/xbin/tftpd may be available
+as symbolic links to /system/xbin/busybox.
 Hence, to avoid troubles, I suggest to rename, adding the -hpa suffix:
 ( cd tftp ; mv tftp tftp-hpa ; mv tftp.1.txt tftp-hpa.1.txt )
 ( cd tftpd ; mv tftpd tftpd-hpa ; mv tftpd.8.txt tftpd-hpa.8.txt )
