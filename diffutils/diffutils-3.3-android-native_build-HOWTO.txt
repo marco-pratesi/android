@@ -21,6 +21,7 @@ the reboot.
 
 Put the diffutils-3.3.tar.xz sources in your build directory, whereas
 diffutils-3.2-android.patch should not be needed.
+Go to your build directory.
 Please note that the following issue may occur when you untar sources:
 http://lists.busybox.net/pipermail/busybox/2010-September/073298.html
 (but it can be easily solved by un-tar-ing and tar-ing again on a GNU/Linux
