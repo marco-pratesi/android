@@ -8,8 +8,8 @@ References:
 Set the environment variables needed to use Android NDK as explained
 in 00_NOTES-env_for_cross_compiling.txt (in the root of the repository).
 
-Building against the ncurses library makes bash more comfortable;
-hence, following the corresponding documentation available in this repository:
+Building against the ncurses library makes bash more comfortable.
+Hence, following the corresponding documentation available in this repository:
 - on the build system, build ncurses, following instructions at least
   until the "make install" step
 - on the target system, install the ncurses package

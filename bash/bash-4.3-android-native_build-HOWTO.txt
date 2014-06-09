@@ -2,8 +2,8 @@
 This build is performed through a native GCC for Android:
 https://github.com/marco-pratesi/android/tree/master/gcc_and_friends
 
-Building against the ncurses library makes bash more comfortable;
-hence, build and install ncurses following the corresponding documentation
+Building against the ncurses library makes bash more comfortable.
+Hence, build and install ncurses following the corresponding documentation
 available in this repository.
 
 mount -o remount,rw /
