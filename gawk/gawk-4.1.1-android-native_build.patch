@@ -1,0 +1,250 @@
+diff -Nrup gawk-4.1.1.orig/awklib/eg/lib/pwcat.c gawk-4.1.1/awklib/eg/lib/pwcat.c
+--- gawk-4.1.1.orig/awklib/eg/lib/pwcat.c	2014-04-08 18:22:17.000000000 +0200
++++ gawk-4.1.1/awklib/eg/lib/pwcat.c	2014-06-09 22:29:16.587000002 +0200
+@@ -25,17 +25,25 @@ main(int argc, char **argv)
+ {
+     struct passwd *p;
+ 
++#if !defined(__BIONIC__)
+     while ((p = getpwent()) != NULL)
+-#ifdef ZOS_USS
++# ifdef ZOS_USS
+         printf("%s:%ld:%ld:%s:%s\n",
+             p->pw_name, (long) p->pw_uid,
+             (long) p->pw_gid, p->pw_dir, p->pw_shell);
+-#else
++# else
+         printf("%s:%s:%ld:%ld:%s:%s:%s\n",
+             p->pw_name, p->pw_passwd, (long) p->pw_uid,
+             (long) p->pw_gid, p->pw_gecos, p->pw_dir, p->pw_shell);
+-#endif
++# endif
+ 
+     endpwent();
++#else /* !defined(__BIONIC__) */
++/* https://android.googlesource.com/platform/system/core/+/master/include/private/android_filesystem_config.h */
++    p = getpwuid(0);
++    printf("%s:%s:%ld:%ld:%s:%s\n",
++        p->pw_name, p->pw_passwd, (long) p->pw_uid,
++        (long) p->pw_gid, p->pw_dir, p->pw_shell);
++#endif /* !defined(__BIONIC__) */
+     return 0;
+ }
+diff -Nrup gawk-4.1.1.orig/awklib/eg/prog/igawk.sh gawk-4.1.1/awklib/eg/prog/igawk.sh
+--- gawk-4.1.1.orig/awklib/eg/prog/igawk.sh	2014-04-08 18:22:17.000000000 +0200
++++ gawk-4.1.1/awklib/eg/prog/igawk.sh	2014-06-09 22:29:22.747000002 +0200
+@@ -1,4 +1,4 @@
+-#! /bin/sh
++#! /system/bin/sh
+ # igawk --- like gawk but do @include processing
+ #
+ # Arnold Robbins, arnold@skeeve.com, Public Domain
+diff -Nrup gawk-4.1.1.orig/builtin.c gawk-4.1.1/builtin.c
+--- gawk-4.1.1.orig/builtin.c	2014-04-03 20:55:27.000000000 +0200
++++ gawk-4.1.1/builtin.c	2014-06-09 22:29:16.717000002 +0200
+@@ -1194,7 +1194,7 @@ out0:
+ 			}
+ 			if (i < 1)
+ 				goto out_of_range;
+-#if defined(HAVE_LOCALE_H)
++#if defined(HAVE_LOCALE_H) && !defined(__BIONIC__)
+ 			quote_flag = (quote_flag && loc.thousands_sep[0] != 0);
+ #endif
+ 			chp = &cpbufs[1].buf[i-1];
+@@ -1202,7 +1202,7 @@ out0:
+ 			do {
+ 				PREPEND(*chp);
+ 				chp--; i--;
+-#if defined(HAVE_LOCALE_H)
++#if defined(HAVE_LOCALE_H) && !defined(__BIONIC__)
+ 				if (quote_flag && loc.grouping[ii] && ++jj == loc.grouping[ii]) {
+ 					if (i) {	/* only add if more digits coming */
+ 						int k;
+@@ -1367,7 +1367,7 @@ mpf1:
+ #ifdef HAVE_MPFR
+ 	int0:
+ #endif
+-#if defined(HAVE_LOCALE_H)
++#if defined(HAVE_LOCALE_H) && !defined(__BIONIC__)
+ 			quote_flag = (quote_flag && loc.thousands_sep[0] != 0);
+ #endif
+ 			/*
+@@ -1386,7 +1386,7 @@ mpf1:
+ 			do {
+ 				PREPEND(chbuf[uval % base]);
+ 				uval /= base;
+-#if defined(HAVE_LOCALE_H)
++#if defined(HAVE_LOCALE_H) && !defined(__BIONIC__)
+ 				if (base == 10 && quote_flag && loc.grouping[ii] && ++jj == loc.grouping[ii]) {
+ 					if (uval) {	/* only add if more digits coming */
+ 						int k;
+diff -Nrup gawk-4.1.1.orig/extension/stack.c gawk-4.1.1/extension/stack.c
+--- gawk-4.1.1.orig/extension/stack.c	2014-01-20 20:53:00.000000000 +0100
++++ gawk-4.1.1/extension/stack.c	2014-06-09 22:29:16.727000002 +0200
+@@ -31,14 +31,14 @@
+ 
+ static size_t size;
+ static void **stack;
+-static int index = -1;
++static int yaindex = -1;
+ 
+ /* stack_empty --- return true if stack is empty */
+ 
+ int
+ stack_empty()
+ {
+-	return index < 0;
++	return yaindex < 0;
+ }
+ 
+ /* stack_top --- return top object on the stack */
+@@ -49,7 +49,7 @@ stack_top()
+ 	if (stack_empty() || stack == NULL)
+ 		return NULL;
+ 
+-	return stack[index];
++	return stack[yaindex];
+ }
+ 
+ /* stack_pop --- pop top object and return it */
+@@ -60,7 +60,7 @@ stack_pop()
+ 	if (stack_empty() || stack == NULL)
+ 		return NULL;
+ 
+-	return stack[index--];
++	return stack[yaindex--];
+ }
+ 
+ /* stack_push --- push an object onto the stack */
+@@ -75,7 +75,7 @@ int stack_push(void *object)
+ 		if (stack == NULL)
+ 			return 0;
+ 		size = INITIAL_STACK;
+-	} else if (index + 1 >= size) {
++	} else if (yaindex + 1 >= size) {
+ 		if (new_size < size)
+ 			return 0;
+ 		new_stack = realloc(stack, new_size * sizeof(void *));
+@@ -85,6 +85,6 @@ int stack_push(void *object)
+ 		stack = new_stack;
+ 	}
+ 
+-	stack[++index] = object;
++	stack[++yaindex] = object;
+ 	return 1;
+ }
+diff -Nrup gawk-4.1.1.orig/io.c gawk-4.1.1/io.c
+--- gawk-4.1.1.orig/io.c	2014-03-05 05:00:36.000000000 +0100
++++ gawk-4.1.1/io.c	2014-06-09 22:29:22.937000002 +0200
+@@ -1932,7 +1932,7 @@ two_way_open(const char *str, struct red
+ 
+ 			signal(SIGPIPE, SIG_DFL);
+ 
+-			execl("/bin/sh", "sh", "-c", str, NULL);
++			execl("/system/bin/sh", "sh", "-c", str, NULL);
+ 			_exit(errno == ENOENT ? 127 : 126);
+ 
+ 		case -1:
+@@ -2058,7 +2058,7 @@ use_pipes:
+ 
+ 	/* stderr does NOT get dup'ed onto child's stdout */
+ #ifdef __EMX__
+-	pid = spawnl(P_NOWAIT, "/bin/sh", "sh", "-c", str, NULL);
++	pid = spawnl(P_NOWAIT, "/system/bin/sh", "sh", "-c", str, NULL);
+ #else  /* __MINGW32__ */
+ 	pid = spawnl(P_NOWAIT, getenv("ComSpec"), "cmd.exe", "/c",
+ 		     qcmd = quote_cmd(str), NULL);
+@@ -2115,7 +2115,7 @@ use_pipes:
+ 		    || close(ctop[0]) == -1 || close(ctop[1]) == -1)
+ 			fatal(_("close of pipe failed (%s)"), strerror(errno));
+ 		/* stderr does NOT get dup'ed onto child's stdout */
+-		execl("/bin/sh", "sh", "-c", str, NULL);
++		execl("/system/bin/sh", "sh", "-c", str, NULL);
+ 		_exit(errno == ENOENT ? 127 : 126);
+ 	}
+ #endif /* NOT __EMX__, NOT __MINGW32__ */
+@@ -2284,7 +2284,7 @@ gawk_popen(const char *cmd, struct redir
+ 	os_close_on_exec(save_stdout, cmd, "pipe", "from"); /* saved stdout of the parent process */
+ 
+ #ifdef __EMX__
+-	pid = spawnl(P_NOWAIT, "/bin/sh", "sh", "-c", cmd, NULL);
++	pid = spawnl(P_NOWAIT, "/system/bin/sh", "sh", "-c", cmd, NULL);
+ #else  /* __MINGW32__ */
+ 	pid = spawnl(P_NOWAIT, getenv("ComSpec"), "cmd.exe", "/c",
+ 		     qcmd = quote_cmd(cmd), NULL);
+@@ -2308,7 +2308,7 @@ gawk_popen(const char *cmd, struct redir
+ 			fatal(_("moving pipe to stdout in child failed (dup: %s)"), strerror(errno));
+ 		if (close(p[0]) == -1 || close(p[1]) == -1)
+ 			fatal(_("close of pipe failed (%s)"), strerror(errno));
+-		execl("/bin/sh", "sh", "-c", cmd, NULL);
++		execl("/system/bin/sh", "sh", "-c", cmd, NULL);
+ 		_exit(errno == ENOENT ? 127 : 126);
+ 	}
+ #endif /* NOT __EMX__, NOT __MINGW32__ */
+diff -Nrup gawk-4.1.1.orig/main.c gawk-4.1.1/main.c
+--- gawk-4.1.1.orig/main.c	2014-04-03 20:55:27.000000000 +0200
++++ gawk-4.1.1/main.c	2014-06-09 22:29:16.857000002 +0200
+@@ -91,10 +91,10 @@ char *CONVFMT = "%.6g";
+ 
+ NODE *Nnull_string;		/* The global null string */
+ 
+-#if defined(HAVE_LOCALE_H)
++#if defined(HAVE_LOCALE_H) && !defined(__BIONIC__)
+ struct lconv loc;		/* current locale */
+ static void init_locale(struct lconv *l);
+-#endif /* defined(HAVE_LOCALE_H) */
++#endif /* defined(HAVE_LOCALE_H) && !defined(__BIONIC__) */
+ 
+ /* The name the program was invoked under, for error messages */
+ const char *myname;
+@@ -232,7 +232,7 @@ main(int argc, char **argv)
+ #if defined(LC_MESSAGES)
+ 	setlocale(LC_MESSAGES, "");
+ #endif
+-#if defined(LC_NUMERIC) && defined(HAVE_LOCALE_H)
++#if defined(LC_NUMERIC) && defined(HAVE_LOCALE_H) && !defined(__BIONIC__)
+ 	/*
+ 	 * Force the issue here.  According to POSIX 2001, decimal
+ 	 * point is used for parsing source code and for command-line
+@@ -1545,7 +1545,7 @@ estrdup(const char *str, size_t len)
+ 	return s;
+ }
+              
+-#if defined(HAVE_LOCALE_H)
++#if defined(HAVE_LOCALE_H) && !defined(__BIONIC__)
+ 
+ /* init_locale --- initialize locale info. */
+ 
+diff -Nrup gawk-4.1.1.orig/mpfr.c gawk-4.1.1/mpfr.c
+--- gawk-4.1.1.orig/mpfr.c	2014-02-20 19:52:05.000000000 +0100
++++ gawk-4.1.1/mpfr.c	2014-06-09 22:29:16.867000002 +0200
+@@ -218,7 +218,7 @@ mpg_maybe_float(const char *str, int use
+ 	int dec_point = '.';
+ 	const char *s = str;
+ 
+-#if defined(HAVE_LOCALE_H)
++#if defined(HAVE_LOCALE_H) && !defined(__BIONIC__)
+ 	/*
+ 	 * loc.decimal_point may not have been initialized yet,
+ 	 * so double check it before using it.
+diff -Nrup gawk-4.1.1.orig/node.c gawk-4.1.1/node.c
+--- gawk-4.1.1.orig/node.c	2014-02-20 19:52:05.000000000 +0100
++++ gawk-4.1.1/node.c	2014-06-09 22:29:16.917000002 +0200
+@@ -606,7 +606,7 @@ get_numbase(const char *s, bool use_loca
+ 	int dec_point = '.';
+ 	const char *str = s;
+ 
+-#if defined(HAVE_LOCALE_H)
++#if defined(HAVE_LOCALE_H) && !defined(__BIONIC__)
+ 	/*
+ 	 * loc.decimal_point may not have been initialized yet,
+ 	 * so double check it before using it.
+diff -Nrup gawk-4.1.1.orig/pc/awklib/igawk gawk-4.1.1/pc/awklib/igawk
+--- gawk-4.1.1.orig/pc/awklib/igawk	2012-05-03 20:13:57.000000000 +0200
++++ gawk-4.1.1/pc/awklib/igawk	2014-06-09 22:29:22.737000002 +0200
+@@ -1,4 +1,4 @@
+-#! /bin/sh
++#! /system/bin/sh
+ 
+ # igawk --- like gawk but do @include processing
+ # Arnold Robbins, arnold@gnu.ai.mit.edu, Public Domain

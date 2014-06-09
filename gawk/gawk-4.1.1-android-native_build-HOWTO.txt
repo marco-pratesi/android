@@ -1,0 +1,43 @@
+
+This build is performed through a native GCC for Android:
+https://github.com/marco-pratesi/android/tree/master/gcc_and_friends
+
+mount -o remount,rw /
+
+Use /data/local/bin/sh -> /data/local/bin/mksh, whose build is documented
+in https://github.com/marco-pratesi/android/tree/master/mksh
+( If you use /system/bin/sh -> /system/bin/mksh instead, you may have
+  to do something like
+  ln -s /sdcard/tmp /sqlite_stmt_journals
+)
+To let /bin/sh and /tmp be available and avoid patching some scripts:
+mkdir -p /sdcard/tmp
+ln -s /data/local/bin /bin ; ln -s /sdcard/tmp /tmp
+
+mount -o remount,ro /
+
+The /bin and /tmp symbolic links will not be persistent: they will not survive
+the reboot.
+
+Put the gawk-4.1.1.tar.xz sources and gawk-4.1.1-android-native_build.patch
+in your build directory.
+Go to your build directory.
+Please note that the following issue may occur when you untar sources:
+http://lists.busybox.net/pipermail/busybox/2010-September/073298.html
+(but it can be easily solved by un-tar-ing and tar-ing again on a GNU/Linux
+box ;-) )
+tar xf gawk-4.1.1.tar.xz ; cd gawk-4.1.1
+patch -p1 < ../gawk-4.1.1-android-native_build.patch
+
+./configure \
+ --prefix=/data/local \
+ --bindir=/data/local/bin \
+ --libdir=/data/local/lib \
+ --mandir=/data/local/share/man \
+ --disable-rpath \
+ --disable-nls
+make ; make install
+( cd /data/local/bin ; strip gawk )
+( cd /data/local/lib/gawk ; strip --strip-unneeded *.so )
+( cd /data/local/libexec/awk ; strip * )
+
