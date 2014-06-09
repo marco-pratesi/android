@@ -16,6 +16,9 @@ ln -s /data/local/bin /bin ; ln -s /sdcard/tmp /tmp
 
 mount -o remount,ro /
 
+The /bin and /tmp symbolic links will not be persistent: they will not survive
+the reboot.
+
 Put the ncurses-5.9.tar.gz sources and ncurses-5.9-android.patch in your
 build directory.
 Go to your build directory.
