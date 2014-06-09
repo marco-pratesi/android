@@ -1,0 +1,32 @@
+diff -Nrup tftp-hpa-5.2.orig/config.h tftp-hpa-5.2/config.h
+--- tftp-hpa-5.2.orig/config.h	2011-12-11 23:13:52.000000000 +0100
++++ tftp-hpa-5.2/config.h	2013-08-25 08:57:37.725556557 +0200
+@@ -279,7 +279,8 @@ typedef int socklen_t;
+ #include <arpa/inet.h>
+ #endif
+ /* If we don't have arpa/tftp.h we have problems... */
+-#include <arpa/tftp.h>
++//#include <arpa/tftp.h>
++#include "tftp.h" /* take it from glibc: awful, but simple, and it works :-) */
+ 
+ #ifndef OACK
+ #define OACK 6
+diff -Nrup tftp-hpa-5.2.orig/tftpd/tftpd.c tftp-hpa-5.2/tftpd/tftpd.c
+--- tftp-hpa-5.2.orig/tftpd/tftpd.c	2011-12-11 23:13:52.000000000 +0100
++++ tftp-hpa-5.2/tftpd/tftpd.c	2013-08-25 09:00:23.882380483 +0200
+@@ -33,6 +33,15 @@
+  * SUCH DAMAGE.
+  */
+ 
++/* References:
++ * http://code.google.com/p/android/issues/detail?id=19710
++ * /usr/include/i386-linux-gnu/sys/stat.h from glibc
++ *   (libc6-dev package on Ubuntu 12.04)
++ */
++# define S_IREAD	S_IRUSR
++# define S_IWRITE	S_IWUSR
++# define S_IEXEC	S_IXUSR
++
+ #include "config.h"             /* Must be included first */
+ #include "tftpd.h"
+ 
