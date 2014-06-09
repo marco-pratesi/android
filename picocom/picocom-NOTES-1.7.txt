@@ -1,4 +1,7 @@
 
+Cross-build through the Android NDK
+-----------------------------------
+
 Set the needed environment variables as explained
 in 00_NOTES-env_for_cross_compiling.txt (in the root of the repository).
 
@@ -13,4 +16,13 @@ On the target system:
 - Put the picocom executable and picocom.8.txt where it is convenient to you.
   (Remember to chmod the executable.)
 - Create the UUCP_LOCK_DIR according to picocom-1.7-android.patch
+
+
+Native build through a native GCC for Android
+---------------------------------------------
+
+Picocom can also be easily compiled through a native GCC for Android:
+see https://github.com/marco-pratesi/android/tree/master/gcc_and_friends .
+Apply picocom-1.7-android.patch, set CC=gcc, run make, strip the resulting
+executable file.
 
