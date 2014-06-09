@@ -23,11 +23,11 @@ A configure problem may arise with cross-compilation of version 7.3.
 References:
 https://groups.google.com/forum/?fromgroups=#!topic/vim_dev/ZsAu_RUjVUs
 http://code.google.com/p/vim/issues/detail?id=25
-To cope with this, you may apply vim-7.3-android.patch through the
-"patch -p1 < ..." command; however, this patch is not needed with
-recent enough 7.3.x versions and with version 7.4.
+To cope with this, you may apply vim-7.3-android-cross_build.patch
+through the "patch -p1 < ..." command; however, this patch is not needed
+with recent enough 7.3.x versions and with version 7.4.
 
-Apply vim-7.4-android.patch through the "patch -p1 < ..." command.
+Apply vim-7.4-android-cross_build.patch through the "patch -p1 < ..." command.
 
 vim_cv_toupper_broken=yes \
 vim_cv_terminfo=yes \
