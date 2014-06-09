@@ -1,6 +1,6 @@
 
-picocom-NOTES-1.7.txt
----------------------
+picocom-1.7-android-build-HOWTO.txt
+-----------------------------------
 How to build and install picocom.
 
 picocom-1.7-android.patch
