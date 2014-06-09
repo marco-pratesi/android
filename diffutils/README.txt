@@ -1,7 +1,14 @@
 
-diffutils-NOTES-3.3.txt
------------------------
-How to build and install diffutils-3.3 for Android.
+diffutils-3.3-android-cross_build-HOWTO.txt
+-------------------------------------------
+How to build the diffutils for Android through the NDK cross-compiler
+and install them.
+
+diffutils-3.3-android-native_build-HOWTO.txt
+--------------------------------------------
+How to build the diffutils through a native GCC for Android
+( https://github.com/marco-pratesi/android/tree/master/gcc_and_friends )
+and install them.
 
 diffutils-3.2-android.patch
 ---------------------------
