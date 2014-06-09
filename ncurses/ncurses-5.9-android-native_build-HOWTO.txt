@@ -2,8 +2,23 @@
 This build is performed through a native GCC for Android:
 https://github.com/marco-pratesi/android/tree/master/gcc_and_friends
 
+mount -o remount,rw /
+
+Use /data/local/bin/sh -> /data/local/bin/mksh, whose build is documented
+in https://github.com/marco-pratesi/android/tree/master/mksh
+( If you use /system/bin/sh -> /system/bin/mksh instead, you may have
+  to do something like
+  ln -s /sdcard/tmp /sqlite_stmt_journals
+)
+To let /bin/sh and /tmp be available and avoid patching some scripts:
+mkdir -p /sdcard/tmp
+ln -s /data/local/bin /bin ; ln -s /sdcard/tmp /tmp
+
+mount -o remount,ro /
+
 Put the ncurses-5.9.tar.gz sources and ncurses-5.9-android.patch in your
 build directory.
+Go to your build directory.
 
 tar xf ncurses-5.9.tar.gz ; cd ncurses-5.9
 patch -p1 < ../ncurses-5.9-android.patch
