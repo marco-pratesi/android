@@ -15,7 +15,7 @@ An example of usage of tftpd-hpa on Android is provided, too.
 tftp-hpa-5.2-android-cross_build.patch and
 tftp-hpa-5.2-android-native_build.patch
 ------------------------------------------
-* Use arpa/tftp.h from glibc, as it is not available in Bionic.
+* Use the arpa/tftp.h taken from glibc, as it is not available in Bionic.
 * Add definitions of S_IWRITE and S_IREAD, taken from glibc.
 
 tftp-hpa-5.2-android-example_of_usage.txt
