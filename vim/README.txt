@@ -72,13 +72,11 @@ Hence, I based my decisions on the following facts:
 - alas, file/dir owners/groups/permissions are not reliable on /sdcard:
   even a *fat*-formatted device may be mounted there (e.g., a microSD card).
 
-My decisions are in the following; read the patch to better understand
-what the hell I have done :-)
-
-In the following, I discuss my decisions for the cross-build and the
-native build, that are based on two different approaches and destination
-directories; obviously, if you know what you are doing, you can "mix"
-such approaches as you prefer.
+In the following, I discuss my decisions for the cross-build and the native
+build, that are based on two different approaches and destination directories;
+read the patches to better understand what the hell I have done :-)
+Obviously, if you know what you are doing, you can "mix" such approaches
+as you prefer.
 
 Cross-build
 -----------
