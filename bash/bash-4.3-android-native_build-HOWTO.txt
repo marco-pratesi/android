@@ -23,7 +23,9 @@ mount -o remount,ro /
 The /bin and /tmp symbolic links will not be persistent: they will not survive
 the reboot.
 
+Put the bash-4.3.tar.gz sources and all patches in your build directory.
 Go to your build directory.
+
 tar xf bash-4.3.tar.gz ; cd bash-4.3
 Apply the following patches through the "patch -p1 < ..." command:
 bash-4.3-android-01.patch

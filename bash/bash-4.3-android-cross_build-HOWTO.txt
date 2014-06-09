@@ -17,7 +17,9 @@ To match directories where ncurses-5.9 has been "cross-installed":
 export LDFLAGS=-L/system/lib
 export CPPFLAGS=-I/foobar/include/ncurses
 
+Put the bash-4.3.tar.gz sources and all patches in your build directory.
 Go to your build directory.
+
 tar xf bash-4.3.tar.gz ; cd bash-4.3
 Apply the following patches through the "patch -p1 < ..." command:
 bash-4.3-android-01.patch
