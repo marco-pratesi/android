@@ -1,6 +1,6 @@
 
-tftp-hpa-NOTES-5.2.txt
-----------------------
+tftp-hpa-5.2-android-cross_build-HOWTO.txt
+------------------------------------------
 How to build tftp-hpa and tftpd-hpa for Android.
 An example of usage of tftpd-hpa on Android is provided, too.
 
