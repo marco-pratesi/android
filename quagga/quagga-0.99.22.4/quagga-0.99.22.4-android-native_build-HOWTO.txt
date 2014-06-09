@@ -1,0 +1,63 @@
+
+This build is performed through a native GCC for Android:
+https://github.com/marco-pratesi/android/tree/master/gcc_and_friends
+
+mount -o remount,rw /
+
+Use /data/local/bin/sh -> /data/local/bin/mksh, whose build is documented
+in https://github.com/marco-pratesi/android/tree/master/mksh
+( If you use /system/bin/sh -> /system/bin/mksh instead, you may have
+  to do something like
+  ln -s /sdcard/tmp /sqlite_stmt_journals
+)
+To let /bin/sh and /tmp be available and avoid patching some scripts:
+mkdir -p /sdcard/tmp
+ln -s /data/local/bin /bin ; ln -s /sdcard/tmp /tmp
+
+mount -o remount,ro /
+
+The /bin and /tmp symbolic links will not be persistent: they will not survive
+the reboot.
+
+Put the quagga-0.99.22.4.tar.gz sources in your build directory.
+Go to your build directory.
+Please note that the following issue may occur when you untar sources:
+http://lists.busybox.net/pipermail/busybox/2010-September/073298.html
+(but it can be easily solved by un-tar-ing and tar-ing again on a GNU/Linux
+box ;-) )
+
+tar xf quagga-0.99.22.4.tar.gz ; cd quagga-0.99.22.4
+
+Apply the following patches through the "patch -p1 < ..." command:
+- quagga-0.99.21-android.patch, in the quagga directory of this repository
+
+./configure \
+ --disable-bgpd \
+ --disable-ripd \
+ --disable-ripngd \
+ --disable-isisd \
+ --enable-ipv6 \
+ --disable-vtysh \
+ --disable-shared \
+ --enable-static \
+ --enable-user=root \
+ --enable-group=root \
+ --enable-vty-group=root \
+ --prefix=/data/local \
+ --bindir=/data/local/xbin \
+ --sbindir=/data/local/xbin \
+ --libexecdir=/data/local/xbin \
+ --sysconfdir=/data/local/etc/quagga \
+ --localstatedir=/data/local/var/run/quagga
+
+make ; make install
+( cd /data/local/xbin ; strip babeld ospf6d ospfclient ospfd watchquagga zebra )
+mkdir -p /data/local/etc/quagga
+# Put configuration files in /data/local/etc/quagga
+( cd /data/local/etc/quagga ; \
+  touch zebra.conf ospfd.conf ospf6d.conf babeld.conf ; \
+  chown root.root * ; chmod 644 * )
+mkdir -p /data/local/var/run/quagga
+chown root.root /data/local/var/run/quagga
+chmod 755 /data/local/var/run/quagga
+
