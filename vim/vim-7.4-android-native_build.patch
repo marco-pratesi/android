@@ -1,0 +1,255 @@
+diff -Nrup vim74.orig/runtime/filetype.vim vim74/runtime/filetype.vim
+--- vim74.orig/runtime/filetype.vim	2013-08-03 17:50:05.000000000 +0200
++++ vim74/runtime/filetype.vim	2013-08-31 14:35:48.690708100 +0200
+@@ -1082,7 +1082,7 @@ au BufNewFile,BufRead *.m4
+ au BufNewFile,BufRead *.mgp			setf mgp
+ 
+ " Mail (for Elm, trn, mutt, muttng, rn, slrn)
+-au BufNewFile,BufRead snd.\d\+,.letter,.letter.\d\+,.followup,.article,.article.\d\+,pico.\d\+,mutt{ng,}-*-\w\+,mutt[[:alnum:]_-]\\\{6\},ae\d\+.txt,/tmp/SLRN[0-9A-Z.]\+,*.eml setf mail
++au BufNewFile,BufRead snd.\d\+,.letter,.letter.\d\+,.followup,.article,.article.\d\+,pico.\d\+,mutt{ng,}-*-\w\+,mutt[[:alnum:]_-]\\\{6\},ae\d\+.txt,*/tmp/SLRN[0-9A-Z.]\+,*.eml setf mail
+ 
+ " Mail aliases
+ au BufNewFile,BufRead */etc/mail/aliases,*/etc/aliases	setf mailaliases
+diff -Nrup vim74.orig/runtime/indent/r.vim vim74/runtime/indent/r.vim
+--- vim74.orig/runtime/indent/r.vim	2013-02-16 18:05:29.000000000 +0100
++++ vim74/runtime/indent/r.vim	2013-08-31 14:35:48.690708100 +0200
+@@ -136,7 +136,7 @@ endfunction
+ " It must be rewritten relying more on indentation
+ function! s:Get_matching_if(linenr, delif)
+ "    let filenm = expand("%")
+-"    call writefile([filenm], "/tmp/matching_if_" . a:linenr)
++"    call writefile([filenm], "/sdcard/tmp/matching_if_" . a:linenr)
+     let line = SanitizeRLine(getline(a:linenr))
+     if a:delif
+         let line = substitute(line, "if", "", "g")
+diff -Nrup vim74.orig/runtime/macros/less.sh vim74/runtime/macros/less.sh
+--- vim74.orig/runtime/macros/less.sh	2012-05-18 13:37:21.000000000 +0200
++++ vim74/runtime/macros/less.sh	2013-08-31 14:35:48.690708100 +0200
+@@ -1,4 +1,4 @@
+-#!/bin/sh
++#!/system/bin/sh
+ # Shell script to start Vim with less.vim.
+ # Read stdin if no arguments were given and stdin was redirected.
+ 
+diff -Nrup vim74.orig/runtime/syntax/sh.vim vim74/runtime/syntax/sh.vim
+--- vim74.orig/runtime/syntax/sh.vim	2013-07-05 18:35:45.000000000 +0200
++++ vim74/runtime/syntax/sh.vim	2013-08-31 14:35:48.694708129 +0200
+@@ -31,10 +31,12 @@ endif
+ " If the user has not specified any of g:is_kornshell, g:is_bash, g:is_posix, g:is_sh, then guess.
+ if !exists("g:is_kornshell") && !exists("g:is_bash") && !exists("g:is_posix") && !exists("g:is_sh")
+  let s:shell = ""
+- if executable("/bin/sh")
+-  let s:shell = resolve("/bin/sh")
+- elseif executable("/usr/bin/sh")
+-  let s:shell = resolve("/usr/bin/sh")
++ if executable("/system/bin/sh")
++  let s:shell = resolve("/system/bin/sh")
++ elseif executable("/system/xbin/sh")
++  let s:shell = resolve("/system/xbin/sh")
++ elseif executable("/data/local/bin/sh")
++  let s:shell = resolve("/data/local/bin/sh")
+  endif
+  if     s:shell =~ 'bash$'
+   let g:is_bash= 1
+diff -Nrup vim74.orig/runtime/tools/ref vim74/runtime/tools/ref
+--- vim74.orig/runtime/tools/ref	2010-05-15 13:04:00.000000000 +0200
++++ vim74/runtime/tools/ref	2013-08-31 14:35:48.698708140 +0200
+@@ -1,4 +1,4 @@
+-#!/bin/sh
++#!/system/bin/sh
+ #
+ # ref - Check spelling of the arguments
+ #
+diff -Nrup vim74.orig/runtime/tools/shtags.pl vim74/runtime/tools/shtags.pl
+--- vim74.orig/runtime/tools/shtags.pl	2010-05-15 13:04:00.000000000 +0200
++++ vim74/runtime/tools/shtags.pl	2013-08-31 14:35:48.698708140 +0200
+@@ -135,7 +135,7 @@ sub check_shell
+ 	}
+     else
+ 	{
+-	$shell = "sh"	if /^:$/ || /^#!.*\/bin\/sh/;
++	$shell = "sh"	if /^:$/ || /^#!.*\/bin\/sh/ || /^#!.*\/xbin\/sh/;
+ 	$shell = "ksh"	if /^#!.*\/ksh/;
+ 	$shell = "perl"	if /^#!.*\/perl/;
+ 	$shell = "tcl"  if /^#!.*\/wish/;
+diff -Nrup vim74.orig/runtime/tools/vimm vim74/runtime/tools/vimm
+--- vim74.orig/runtime/tools/vimm	2010-05-15 13:04:00.000000000 +0200
++++ vim74/runtime/tools/vimm	2013-08-31 14:35:48.698708140 +0200
+@@ -1,4 +1,4 @@
+-#!/bin/sh
++#!/system/bin/sh
+ # enable DEC locator input model on remote terminal
+ printf  "\033[1;2'z\033[1;3'{\c"
+ vim "$@"
+diff -Nrup vim74.orig/runtime/tools/vimspell.sh vim74/runtime/tools/vimspell.sh
+--- vim74.orig/runtime/tools/vimspell.sh	2010-05-15 13:04:00.000000000 +0200
++++ vim74/runtime/tools/vimspell.sh	2013-08-31 14:35:48.702708158 +0200
+@@ -1,4 +1,4 @@
+-#!/bin/sh
++#!/system/bin/sh
+ #
+ # Spell a file & generate the syntax statements necessary to
+ # highlight in vim.  Based on a program from Krishna Gadepalli
+@@ -16,7 +16,7 @@
+ # Safe method for the temp file by Javier Fernández-Sanguino_Peña
+ 
+ INFILE=$1
+-tmp="${TMPDIR-/tmp}"
++tmp="${TMPDIR-/sdcard/tmp}"
+ OUTFILE=`mktemp -t vimspellXXXXXX || tempfile -p vimspell || echo none`
+ # If the standard commands failed then create the file
+ # since we cannot create a directory (we cannot remove it on exit)
+diff -Nrup vim74.orig/src/diff.c vim74/src/diff.c
+--- vim74.orig/src/diff.c	2013-07-17 13:43:15.000000000 +0200
++++ vim74/src/diff.c	2013-08-31 14:35:48.702708158 +0200
+@@ -958,7 +958,7 @@ ex_diffpatch(eap)
+ 	    ignored = mch_chdir((char *)vim_tempdir);
+ 	else
+ # endif
+-	    ignored = mch_chdir("/tmp");
++	    ignored = mch_chdir("/sdcard/tmp");
+ 	shorten_fnames(TRUE);
+     }
+ #endif
+diff -Nrup vim74.orig/src/ex_cmds.c vim74/src/ex_cmds.c
+--- vim74.orig/src/ex_cmds.c	2013-08-07 15:15:51.000000000 +0200
++++ vim74/src/ex_cmds.c	2013-08-31 14:35:48.706708187 +0200
+@@ -1786,7 +1786,9 @@ write_viminfo(file, forceit)
+ 	 * write the new viminfo into, in the same directory as the
+ 	 * existing viminfo file, which will be renamed later.
+ 	 */
+-#ifdef UNIX
++#if defined(UNIX) && !defined(__BIONIC__)
++/* On Android, file properties on /sdcard are not reliable;
++ * even a *fat* formatted device may be mounted there */
+ 	/*
+ 	 * For Unix we check the owner of the file.  It's not very nice to
+ 	 * overwrite a user's viminfo file after a "su root", with a
+diff -Nrup vim74.orig/src/if_cscope.c vim74/src/if_cscope.c
+--- vim74.orig/src/if_cscope.c	2013-06-30 14:59:21.000000000 +0200
++++ vim74/src/if_cscope.c	2013-08-31 14:35:48.710708196 +0200
+@@ -1006,7 +1006,7 @@ err_closing:
+ 	    PERROR(_("cs_create_connection setpgid failed"));
+ #  endif
+ # endif
+-	if (execl("/bin/sh", "sh", "-c", cmd, (char *)NULL) == -1)
++	if (execl("/system/bin/sh", "sh", "-c", cmd, (char *)NULL) == -1)
+ 	    PERROR(_("cs_create_connection exec failed"));
+ 
+ 	exit(127);
+diff -Nrup vim74.orig/src/mbyte.c vim74/src/mbyte.c
+--- vim74.orig/src/mbyte.c	2013-07-05 20:07:21.000000000 +0200
++++ vim74/src/mbyte.c	2013-08-31 14:35:48.714708225 +0200
+@@ -700,7 +700,7 @@ codepage_invalid:
+ 	     * API */
+ 	    n = IsDBCSLeadByteEx(enc_dbcs, (BYTE)i) ? 2 : 1;
+ #else
+-# if defined(MACOS) || defined(__amigaos4__)
++# if defined(MACOS) || defined(__amigaos4__) || defined(__BIONIC__)
+ 	    /*
+ 	     * if mblen() is not available, character which MSB is turned on
+ 	     * are treated as leading byte character. (note : This assumption
+diff -Nrup vim74.orig/src/option.c vim74/src/option.c
+--- vim74.orig/src/option.c	2013-07-17 21:39:13.000000000 +0200
++++ vim74/src/option.c	2013-08-31 14:35:48.730708304 +0200
+@@ -3144,7 +3144,7 @@ set_init_1()
+ 	    mustfree = FALSE;
+ # ifdef UNIX
+ 	    if (*names[n] == NUL)
+-		p = (char_u *)"/tmp";
++		p = (char_u *)"/sdcard/tmp";
+ 	    else
+ # endif
+ 		p = vim_getenv((char_u *)names[n], &mustfree);
+diff -Nrup vim74.orig/src/os_unix.c vim74/src/os_unix.c
+--- vim74.orig/src/os_unix.c	2013-07-03 16:32:32.000000000 +0200
++++ vim74/src/os_unix.c	2013-08-31 14:35:48.734708318 +0200
+@@ -1043,8 +1043,8 @@ deathtrap SIGDEFARG(sigarg)
+      * You need to manually adjust the file name and Vim executable name.
+      * Suggested by SungHyun Nam. */
+     {
+-# define VI_GDB_FILE "/tmp/vimgdb"
+-# define VIM_NAME "/usr/bin/vim"
++# define VI_GDB_FILE "/sdcard/tmp/vimgdb"
++# define VIM_NAME "/data/local/bin/vim"
+ 	FILE *fp = fopen(VI_GDB_FILE, "w");
+ 	if (fp)
+ 	{
+diff -Nrup vim74.orig/src/os_unix.h vim74/src/os_unix.h
+--- vim74.orig/src/os_unix.h	2013-06-12 20:09:44.000000000 +0200
++++ vim74/src/os_unix.h	2013-08-31 14:35:48.738708340 +0200
+@@ -302,7 +302,7 @@ typedef struct dsc$descriptor   DESC;
+ #  ifdef VMS
+ #   define USR_VIMRC_FILE2	"sys$login:vimfiles:vimrc"
+ #  else
+-#    define USR_VIMRC_FILE2	"~/.vim/vimrc"
++#    define USR_VIMRC_FILE2	"$HOME/.vim/vimrc"
+ #  endif
+ # endif
+ #endif
+@@ -329,7 +329,7 @@ typedef struct dsc$descriptor   DESC;
+ #  ifdef VMS
+ #   define USR_GVIMRC_FILE2	"sys$login:vimfiles:gvimrc"
+ #  else
+-#   define USR_GVIMRC_FILE2	"~/.vim/gvimrc"
++#   define USR_GVIMRC_FILE2	"$HOME/.vim/gvimrc"
+ #  endif
+ # endif
+ #endif
+@@ -385,7 +385,7 @@ typedef struct dsc$descriptor   DESC;
+ #  ifdef VMS
+ #   define DFLT_BDIR    "./,sys$login:,tmp:"
+ #  else
+-#   define DFLT_BDIR    ".,~/tmp,~/"    /* default for 'backupdir' */
++#   define DFLT_BDIR    ".,$HOME/tmp,$HOME"    /* default for 'backupdir' */
+ #  endif
+ # endif
+ #endif
+@@ -397,7 +397,7 @@ typedef struct dsc$descriptor   DESC;
+ #  ifdef VMS
+ #   define DFLT_DIR     "./,sys$login:,tmp:"
+ #  else
+-#   define DFLT_DIR     ".,~/tmp,/var/tmp,/tmp" /* default for 'directory' */
++#   define DFLT_DIR     ".,$HOME/tmp,/sdcard/tmp,/data/local/var/tmp" /* default for 'directory' */
+ #  endif
+ # endif
+ #endif
+@@ -423,9 +423,9 @@ typedef struct dsc$descriptor   DESC;
+ #  define DFLT_RUNTIMEPATH      "sys$login:vimfiles,$VIM/vimfiles,$VIMRUNTIME,$VIM/vimfiles/after,sys$login:vimfiles/after"
+ # else
+ #  ifdef RUNTIME_GLOBAL
+-#   define DFLT_RUNTIMEPATH	"~/.vim," RUNTIME_GLOBAL ",$VIMRUNTIME," RUNTIME_GLOBAL "/after,~/.vim/after"
++#   define DFLT_RUNTIMEPATH	"$HOME/.vim," RUNTIME_GLOBAL ",$VIMRUNTIME," RUNTIME_GLOBAL "/after,$HOME/.vim/after"
+ #  else
+-#   define DFLT_RUNTIMEPATH	"~/.vim,$VIM/vimfiles,$VIMRUNTIME,$VIM/vimfiles/after,~/.vim/after"
++#   define DFLT_RUNTIMEPATH	"$HOME/.vim,$VIM/vimfiles,$VIMRUNTIME,$VIM/vimfiles/after,$HOME/.vim/after"
+ #  endif
+ # endif
+ #endif
+@@ -444,7 +444,7 @@ typedef struct dsc$descriptor   DESC;
+ #  define TEMPNAME       "TMP:v?XXXXXX.txt"
+ #  define TEMPNAMELEN    28
+ # else
+-#  define TEMPDIRNAMES  "$TMPDIR", "/tmp", ".", "$HOME"
++#  define TEMPDIRNAMES  "$HOME", "$HOME/tmp", "$TMPDIR", "/sdcard/tmp", "."
+ #  define TEMPNAMELEN    256
+ # endif
+ #endif
+diff -Nrup vim74.orig/src/vimtutor vim74/src/vimtutor
+--- vim74.orig/src/vimtutor	2010-05-15 13:04:10.000000000 +0200
++++ vim74/src/vimtutor	2013-08-31 14:35:48.738708340 +0200
+@@ -1,4 +1,4 @@
+-#! /bin/sh
++#! /system/bin/sh
+ 
+ # Start Vim on a copy of the tutor file.
+ 
+@@ -24,7 +24,7 @@ xx=$1
+ export xx
+ 
+ # We need a temp file for the copy.  First try using a standard command.
+-tmp="${TMPDIR-/tmp}"
++tmp="${TMPDIR-/sdcard/tmp}"
+ TUTORCOPY=`mktemp $tmp/tutorXXXXXX || tempfile -p tutor || echo none`
+ 
+ # If the standard commands failed then create a directory to put the copy in.

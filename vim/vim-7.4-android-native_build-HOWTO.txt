@@ -1,0 +1,68 @@
+
+This build is performed through a native GCC for Android:
+https://github.com/marco-pratesi/android/tree/master/gcc_and_friends
+
+The ncurses library is needed.
+Hence, build and install ncurses following the corresponding documentation
+available in this repository.
+
+Furthermore, "vimdiff" requires diffutils (see detailed notes at the end
+of this document).
+Hence, build and install diffutils following the corresponding documentation
+available in this repository.
+
+mount -o remount,rw /
+
+Use /data/local/bin/sh -> /data/local/bin/mksh, whose build is documented
+in https://github.com/marco-pratesi/android/tree/master/mksh
+( If you use /system/bin/sh -> /system/bin/mksh instead, you may have
+  to do something like
+  ln -s /sdcard/tmp /sqlite_stmt_journals
+)
+To let /bin/sh and /tmp be available and avoid patching some scripts:
+mkdir -p /sdcard/tmp
+ln -s /data/local/bin /bin ; ln -s /sdcard/tmp /tmp
+
+mount -o remount,ro /
+
+The /bin and /tmp symbolic links will not be persistent: they will not survive
+the reboot.
+
+Put the vim-7.4.tar.bz2 sources and vim-7.4-android-native_build.patch
+in your build directory.
+tar xf vim-7.4.tar.bz2 ; cd vim74
+patch -p1 < ../vim-7.4-android-native_build.patch
+
+./configure \
+ --with-tlib=ncurses \
+ --prefix=/data/local \
+ --bindir=/data/local/bin \
+ --datarootdir=/data/local/share \
+ --mandir=/data/local/share/man
+
+make
+make install
+( cd /data/local/bin ; strip vim xxd )
+
+mkdir -p /sdcard/tmp
+
+Create /data/local/share/vim/vimrc according to your needs/preferences;
+you may want to create it as an empty file:
+touch /data/local/share/vim/vimrc
+(I'm providing my favourite vimrc for Android: vimrc-android.)
+chown root.root /data/local/share/vim/vimrc
+chmod 644 /data/local/share/vim/vimrc
+
+------------------------------
+Why vimdiff requires diffutils
+------------------------------
+:help vimdiff
+==> [...] This only works when a standard "diff" command is available. [...]
+man busybox
+==> "diff" section ==> This implementation supports unified diffs only.
+man diff
+==> To realize that the default ("standard") diff and a unified diff
+     are not the same.
+Conclusion: for vimdiff to be useful, replace the busybox diff
+with diff from diffutils.
+
