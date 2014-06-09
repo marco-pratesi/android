@@ -21,7 +21,7 @@ diff -Nrup tftp-hpa-5.2.orig/tftpd/tftpd.c tftp-hpa-5.2/tftpd/tftpd.c
 +/* References:
 + * http://code.google.com/p/android/issues/detail?id=19710
 + * /usr/include/i386-linux-gnu/sys/stat.h from glibc
-+ *   (libc6-dev package on Ubuntu 12.04)
++ *   (libc6-dev package on Ubuntu 12.04 x86)
 + */
 +# define S_IREAD	S_IRUSR
 +# define S_IWRITE	S_IWUSR
