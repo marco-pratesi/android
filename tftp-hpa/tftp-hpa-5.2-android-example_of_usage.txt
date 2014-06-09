@@ -1,0 +1,6 @@
+
+An example of usage:
+mkdir -p /data/local/tftpboot
+./tftpd-hpa -L -u root -a :69 -s -c -U 022 -p /data/local/tftpboot
+Stop tftpd-hpa with CTRL-C when you do not need it anymore.
+
