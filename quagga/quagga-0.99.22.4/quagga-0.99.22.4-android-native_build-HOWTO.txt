@@ -2,6 +2,10 @@
 This build is performed through a native GCC for Android:
 https://github.com/marco-pratesi/android/tree/master/gcc_and_friends
 
+Gawk is needed to perform this build.
+Hence, build and install gawk following the corresponding documentation
+available in this repository.
+
 mount -o remount,rw /
 
 Use /data/local/bin/sh -> /data/local/bin/mksh, whose build is documented
