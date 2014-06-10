@@ -1,0 +1,59 @@
+
+Set the environment variables needed to use Android NDK as explained
+in 00_NOTES-env_for_cross_compiling.txt (in the root of the repository).
+
+The build requires that perl, texinfo, and help2man are installed
+on the build system: as an example, on GNU/Linux Ubuntu 14.04 x86_64,
+apt-get install perl texinfo help2man
+
+Put the bison-3.0.2.tar.xz sources and bison-3.0.2-android-cross_build.patch
+in your build directory.
+
+NOTE: the original build process (without any patch) assumes that
+the src/bison executable is built and then used to build documentation.
+If you cross-compile, the resulting src/bison can be run on the target
+platform, but it can not be run on the build platform.
+This is the reason why the patch replaces src/bison with bison; hence,
+to cross-compile, you need to have bison installed on the build platform.
+As an alternative, you can disable the build of documentation, using
+the patch available for the native build.
+
+Go to your build directory.
+tar xf bison-3.0.2.tar.xz ; cd bison-3.0.2
+patch -p1 < ../bison-3.0.2-android-cross_build.patch
+
+A dirty trick to let "configure" find m4 where it can be found on the
+target device (the full path of m4 will be hardcoded in the bison executable):
+rm -rf /system
+mkdir -p /system/xbin
+cp -a /usr/bin/m4 /system/xbin/m4
+export PATH=/system/xbin:$PATH
+
+./configure \
+ --host=arm-linux \
+ --prefix=/system \
+ --bindir=/system/xbin \
+ --libdir=/system/lib \
+ --datarootdir=/system/usr/share \
+ --mandir=/system/usr/share/man \
+ --disable-rpath \
+ --disable-nls
+
+make ; make install
+$STRIP /system/xbin/bison
+rm /system/xbin/m4
+
+tar cf bison-3.0.2-arm.tar /system
+
+To install, perform the following steps on the target device:
+- temporarily remount /system as read/write:
+  mount -o remount,rw /system
+- if you installed a previous version, then carefully remove it, as Android
+  will not overwrite old files with new ones
+- extract the package in the root directory ("/"): as an example,
+  put it in the /sdcard dir of the target system, then
+  cd /
+  tar xvf /sdcard/bison-3.0.2-arm.tar
+- remount /system as read-only:
+  mount -o remount,ro /system
+

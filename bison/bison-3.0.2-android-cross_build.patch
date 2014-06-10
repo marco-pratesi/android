@@ -1,0 +1,31 @@
+diff -Nrup bison-3.0.2.orig/Makefile.in bison-3.0.2/Makefile.in
+--- bison-3.0.2.orig/Makefile.in	2013-12-05 14:58:54.000000000 +0100
++++ bison-3.0.2/Makefile.in	2014-06-10 17:05:15.375918439 +0200
+@@ -5137,7 +5137,7 @@ $(CROSS_OPTIONS_TEXI): doc/bison.help $(
+ # diff in the next run.  Note that $@ might not exist yet.
+ 	$(AM_V_GEN){ test ! -f $@ || cat $@; } >$@~
+ 	$(AM_V_at)test ! -f $@.tmp || rm -f $@.tmp
+-	$(AM_V_at)src/bison$(EXEEXT) --help |				 \
++	$(AM_V_at)bison$(EXEEXT) --help |				 \
+ 	  $(PERL) $(CROSS_OPTIONS_PL) $(top_srcdir)/src/scan-gram.l >$@.tmp
+ 	$(AM_V_at)diff -u $@~ $@.tmp || true
+ 	$(AM_V_at)mv $@.tmp $@
+@@ -5145,15 +5145,15 @@ $(CROSS_OPTIONS_TEXI): doc/bison.help $(
+ doc/refcard.pdf: doc/refcard.tex
+ 	$(AM_V_GEN) cd doc && pdftex $(abs_top_srcdir)/doc/refcard.tex
+ $(top_srcdir)/doc/bison.help: src/bison$(EXEEXT)
+-	$(AM_V_GEN)src/bison$(EXEEXT) --version >doc/bison.help.tmp
+-	$(AM_V_at) src/bison$(EXEEXT) --help   >>doc/bison.help.tmp
++	$(AM_V_GEN)bison$(EXEEXT) --version >doc/bison.help.tmp
++	$(AM_V_at) bison$(EXEEXT) --help   >>doc/bison.help.tmp
+ 	$(AM_V_at)$(top_srcdir)/build-aux/move-if-change doc/bison.help.tmp $@
+ 
+ # Depend on configure to get version number changes.
+ $(top_srcdir)/doc/bison.1: doc/bison.help doc/bison.x $(top_srcdir)/configure
+ 	$(AM_V_GEN)$(HELP2MAN)			\
+ 	    --include=$(top_srcdir)/doc/bison.x	\
+-	    --output=$@.t src/bison$(EXEEXT)
++	    --output=$@.t bison$(EXEEXT)
+ 	$(AM_V_at)if $(remove_time_stamp) $@ >$@a.t 2>/dev/null &&	 \
+ 	   $(remove_time_stamp) $@.t | cmp $@a.t - >/dev/null 2>&1; then \
+ 	  touch $@;							 \
