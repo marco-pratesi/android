@@ -1,0 +1,9 @@
+diff -Nrup olsrd-0.6.6.2.orig/files/sgw_policy_routing_setup.sh olsrd-0.6.6.2/files/sgw_policy_routing_setup.sh
+--- olsrd-0.6.6.2.orig/files/sgw_policy_routing_setup.sh	2014-06-02 12:15:27.000000000 +0200
++++ olsrd-0.6.6.2/files/sgw_policy_routing_setup.sh	2014-06-10 19:14:25.967000001 +0200
+@@ -1,4 +1,4 @@
+-#!/bin/bash
++#!/data/local/bin/bash
+ 
+ set -e
+ set -u

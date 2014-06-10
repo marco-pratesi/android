@@ -1,0 +1,19 @@
+diff -Nrup olsrd-0.6.6.2.orig/make/Makefile.android olsrd-0.6.6.2/make/Makefile.android
+--- olsrd-0.6.6.2.orig/make/Makefile.android	2014-06-02 12:15:27.000000000 +0200
++++ olsrd-0.6.6.2/make/Makefile.android	2014-06-10 18:30:38.907000001 +0200
+@@ -105,11 +105,11 @@ NDK_COMPILER_VERSION=4.6
+ NDK_TOOLCHAIN=$(NDK_BASE)/toolchains/$(NDK_ABI)-linux-androideabi-$(NDK_COMPILER_VERSION)/prebuilt/$(NDK_UNAME)-x86
+ CROSS_COMPILE = $(NDK_TOOLCHAIN)/bin/$(HOST)-
+ 
+-CC = $(CROSS_COMPILE)gcc --sysroot="$(NDK_SYSROOT)"
+-LD = $(CROSS_COMPILE)ld
+-AR = $(CROSS_COMPILE)ar
++CC = gcc
++LD = ld
++AR = ar
+ ifeq ($(DEBUG),0)
+-STRIP = $(CROSS_COMPILE)strip
++STRIP = strip
+ endif
+ 
+ # Android didn't add regex until android-8 so include this one

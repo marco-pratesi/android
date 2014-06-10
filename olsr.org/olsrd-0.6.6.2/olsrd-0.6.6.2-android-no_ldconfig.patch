@@ -1,0 +1,93 @@
+diff -Nrup olsrd-0.6.6.2.orig/lib/pud/nmealib/Makefile olsrd-0.6.6.2/lib/pud/nmealib/Makefile
+--- olsrd-0.6.6.2.orig/lib/pud/nmealib/Makefile	2014-06-02 12:15:27.000000000 +0200
++++ olsrd-0.6.6.2/lib/pud/nmealib/Makefile	2014-06-10 20:00:11.016999838 +0200
+@@ -83,7 +83,7 @@ install: all
+ 	$(MAKECMDPREFIX)mkdir -v -p "$(LIBDIR)"
+ 	$(MAKECMDPREFIX)cp -v "lib/$(LIBNAME)" "$(LIBDIR)/$(LIBNAME).$(VERSION)"
+ 	$(MAKECMDPREFIX)$(STRIP) "$(LIBDIR)/$(LIBNAME).$(VERSION)"
+-	$(MAKECMDPREFIX)/sbin/ldconfig -n "$(LIBDIR)"
++#	$(MAKECMDPREFIX)/sbin/ldconfig -n "$(LIBDIR)"
+ 
+ install-headers: all
+ 	$(MAKECMDPREFIX)mkdir -v -p "$(INCLUDEDIR)"
+@@ -92,7 +92,7 @@ install-headers: all
+ 
+ uninstall:
+ 	$(MAKECMDPREFIX)rm -fv "$(LIBDIR)/$(LIBNAME)" "$(LIBDIR)/$(LIBNAME).$(VERSION)"
+-	$(MAKECMDPREFIX)/sbin/ldconfig -n "$(LIBDIR)"
++#	$(MAKECMDPREFIX)/sbin/ldconfig -n "$(LIBDIR)"
+ 	$(MAKECMDPREFIX)rmdir -v -p --ignore-fail-on-non-empty "$(LIBDIR)"
+ 
+ uninstall-headers:
+diff -Nrup olsrd-0.6.6.2.orig/lib/pud/wireformat/Makefile olsrd-0.6.6.2/lib/pud/wireformat/Makefile
+--- olsrd-0.6.6.2.orig/lib/pud/wireformat/Makefile	2014-06-02 12:15:27.000000000 +0200
++++ olsrd-0.6.6.2/lib/pud/wireformat/Makefile	2014-06-10 20:01:02.367000007 +0200
+@@ -100,7 +100,7 @@ install: all
+ 	mkdir -v -p "$(LIBDIR)"
+ 	cp "$(LIBDIR_BUILD)/$(SONAME)" "$(LIBDIR)/$(SONAME).$(PLUGIN_VER)"
+ 	$(STRIP) "$(LIBDIR)/$(SONAME).$(PLUGIN_VER)"
+-	/sbin/ldconfig -n "$(LIBDIR)"
++#	/sbin/ldconfig -n "$(LIBDIR)"
+ 
+ install-headers:
+ 	rm -fr "$(INCLUDEDIR)/$(PROJECT)"
+@@ -110,7 +110,7 @@ install-headers:
+ uninstall:
+ 	rm -f "$(LIBDIR)/$(SONAME)" \
+ 	      "$(LIBDIR)/$(SONAME).$(PLUGIN_VER)"
+-	/sbin/ldconfig -n "$(LIBDIR)"
++#	/sbin/ldconfig -n "$(LIBDIR)"
+ 	rmdir -v -p --ignore-fail-on-non-empty \
+ 	  "$(LIBDIR)"
+ 
+diff -Nrup olsrd-0.6.6.2.orig/lib/pud/wireformat-java/Makefile olsrd-0.6.6.2/lib/pud/wireformat-java/Makefile
+--- olsrd-0.6.6.2.orig/lib/pud/wireformat-java/Makefile	2014-06-02 12:15:27.000000000 +0200
++++ olsrd-0.6.6.2/lib/pud/wireformat-java/Makefile	2014-06-10 20:00:30.827000001 +0200
+@@ -319,7 +319,7 @@ install: all
+ 	mkdir -v -p "$(LIBDIR)"
+ 	cp "$(LIBDIR_BUILD)/$(SONAME)" "$(LIBDIR)/$(SONAME).$(PLUGIN_VER)"
+ 	$(STRIP) "$(LIBDIR)/$(SONAME).$(PLUGIN_VER)"
+-	/sbin/ldconfig -n "$(LIBDIR)"
++#	/sbin/ldconfig -n "$(LIBDIR)"
+ 	mkdir -v -p "$(SHAREJAVADIR)"
+ 	cp -t "$(SHAREJAVADIR)" \
+       "$(LIBDIR_BUILD)/$(PROJECT).jar" \
+@@ -329,7 +329,7 @@ install: all
+ uninstall:
+ 	rm -f "$(LIBDIR)/$(SONAME)" \
+ 	      "$(LIBDIR)/$(SONAME).$(PLUGIN_VER)"
+-	/sbin/ldconfig -n "$(LIBDIR)"
++#	/sbin/ldconfig -n "$(LIBDIR)"
+ 	rmdir -v -p --ignore-fail-on-non-empty "$(LIBDIR)"
+ 	rm -f "$(SHAREJAVADIR)/$(PROJECT).jar" \
+           "$(SHAREJAVADIR)/$(PROJECT)-src.zip" \
+diff -Nrup olsrd-0.6.6.2.orig/make/Makefile.android olsrd-0.6.6.2/make/Makefile.android
+--- olsrd-0.6.6.2.orig/make/Makefile.android	2014-06-02 12:15:27.000000000 +0200
++++ olsrd-0.6.6.2/make/Makefile.android	2014-06-10 19:59:19.146997323 +0200
+@@ -87,10 +87,10 @@ endif
+ 
+ PLUGIN_SONAME ?= $(PLUGIN_NAME)
+ PLUGIN_FULLNAME ?= $(PLUGIN_NAME).so.$(PLUGIN_VER)
+-INSTALL_LIB =	install -D -m 755 $(PLUGIN_FULLNAME) $(LIBDIR)/$(PLUGIN_FULLNAME); \
+-		/sbin/ldconfig -n $(LIBDIR)
+-UNINSTALL_LIB =	rm -f $(LIBDIR)/$(PLUGIN_FULLNAME); \
+-		/sbin/ldconfig -n $(LIBDIR)
++INSTALL_LIB =	install -D -m 755 $(PLUGIN_FULLNAME) $(LIBDIR)/$(PLUGIN_FULLNAME)
++#		/sbin/ldconfig -n $(LIBDIR)
++UNINSTALL_LIB =	rm -f $(LIBDIR)/$(PLUGIN_FULLNAME)
++#		/sbin/ldconfig -n $(LIBDIR)
+ 
+ # Android NDK setup
+ HOST = arm-linux-androideabi
+diff -Nrup olsrd-0.6.6.2.orig/src/cfgparser/Makefile olsrd-0.6.6.2/src/cfgparser/Makefile
+--- olsrd-0.6.6.2.orig/src/cfgparser/Makefile	2014-06-02 12:15:27.000000000 +0200
++++ olsrd-0.6.6.2/src/cfgparser/Makefile	2014-06-10 19:59:40.927002065 +0200
+@@ -96,7 +96,7 @@ endif
+ 
+ install:
+ 		install -D -m 755 $(NAME) $(LIBDIR)/$(NAME)
+-		/sbin/ldconfig -n $(LIBDIR)
++#		/sbin/ldconfig -n $(LIBDIR)
+ 
+ clean:
+ 		rm -f *.[od~] $(LIBNAME) $(BINNAME) $(TMPFILES)

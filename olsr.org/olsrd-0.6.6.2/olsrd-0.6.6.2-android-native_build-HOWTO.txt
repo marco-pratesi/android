@@ -1,0 +1,48 @@
+
+This build is performed through a native GCC for Android:
+https://github.com/marco-pratesi/android/tree/master/gcc_and_friends
+
+M4, sed, flex, and bison are needed to perform this build.
+Hence, build and install all that packages following the corresponding
+documentation available in this repository.
+(NOTE: the sed applet of busybox should work, too.)
+Bash is needed, too, if you want to use sgw_policy_routing_setup.sh
+This repository provides documentation to build and install bash, too.
+
+Put the olsrd-0.6.6.2.tar.bz2 sources and all patches in your build directory.
+Go to your build directory.
+
+tar xf olsrd-0.6.6.2.tar.bz2 ; cd olsrd-0.6.6.2
+patch -p1 < ../olsrd-0.6.6.2-android-conf_file_path.patch
+patch -p1 < ../olsrd-0.6.6.2-android-quagga.patch
+patch -p1 < ../olsrd-0.6.6.2-android-bash_bang.patch
+patch -p1 < ../olsrd-0.6.6.2-android-no_ldconfig.patch
+patch -p1 < ../olsrd-0.6.6.2-android-native_compiler.patch
+
+BUILD_OPTIONS="
+OS=android
+DEBUG=0
+VERBOSE=1
+DESTDIR=/data/local
+ETCDIR=/data/local/etc/olsrd
+USRDIR=/data/local
+INCLUDEDIR=/data/local/include
+LIBDIR=/data/local/lib
+SBINDIR=/data/local/xbin
+SHAREDIR=/data/local/share
+DOCDIR=/data/local/share/doc
+DOCDIR_OLSRD=/data/local/share/doc
+MANDIR=/data/local/share/man
+EXENAME=olsrd
+CFGNAME=olsrd.conf
+CFGFILE=/data/local/etc/olsrd/olsrd.conf
+SGW_POLICY_SCRIPT=sgw_policy_routing_setup.sh"
+
+make $BUILD_OPTIONS
+strip olsrd
+make $BUILD_OPTIONS libs
+strip --strip-unneeded `find . -name '*.so*'`
+
+make $BUILD_OPTIONS install
+make $BUILD_OPTIONS libs_install
+
