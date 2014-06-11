@@ -15,6 +15,7 @@ Go to your build directory.
 tar xf olsrd-0.6.6.2.tar.bz2 ; cd olsrd-0.6.6.2
 patch -p1 < ../olsrd-0.6.6.2-android-conf_file_path.patch
 patch -p1 < ../olsrd-0.6.6.2-android-quagga.patch
+patch -p1 < ../olsrd-0.6.6.2-android-DEFAULT_LOCKFILE_PREFIX.patch
 patch -p1 < ../olsrd-0.6.6.2-android-bash_bang.patch
 patch -p1 < ../olsrd-0.6.6.2-android-no_ldconfig.patch
 patch -p1 < ../olsrd-0.6.6.2-android-native_compiler.patch
@@ -45,4 +46,5 @@ strip --strip-unneeded `find . -name '*.so*'`
 
 make $BUILD_OPTIONS install
 make $BUILD_OPTIONS libs_install
+mkdir -p /data/local/var/run/olsrd  # my custom directory for the lockfile
 

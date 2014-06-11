@@ -1,0 +1,12 @@
+diff -Nrup olsrd-0.6.6.2.orig/src/main.c olsrd-0.6.6.2/src/main.c
+--- olsrd-0.6.6.2.orig/src/main.c	2014-06-02 12:15:27.000000000 +0200
++++ olsrd-0.6.6.2/src/main.c	2014-06-11 09:36:55.904000000 +0200
+@@ -84,7 +84,7 @@ static void olsr_shutdown(int) __attribu
+ #endif /* _WIN32 */
+ 
+ #if defined __ANDROID__
+-#define DEFAULT_LOCKFILE_PREFIX "/data/local/olsrd"
++#define DEFAULT_LOCKFILE_PREFIX "/data/local/var/run/olsrd/olsrd"
+ #elif defined linux || defined __FreeBSD__ || defined __NetBSD__ || defined __OpenBSD__
+ #define DEFAULT_LOCKFILE_PREFIX "/var/run/olsrd"
+ #elif defined _WIN32
