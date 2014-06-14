@@ -23,7 +23,28 @@ mount -o remount,ro /
 The /bin and /tmp symbolic links will not be persistent: they will not survive
 the reboot.
 
-Put the quagga-0.99.22.4.tar.gz sources in your build directory.
+Bionic does not provide crypt(), that is used by Quagga to implement
+"service password-encryption".
+To overcome this limitation of Bionic, you have some alternatives:
+- remove the usage of crypt(): apply quagga-0.99.22.4-android-crypt-remove.patch
+- use the crypt() provided by dietlibc: use dietlibc soources and apply
+  quagga-0.99.22.4-android-crypt-dietlibc-0.33.patch
+- use the crypt() provided by uClibc: use uClibc sources and apply
+  quagga-0.99.22.4-android-crypt-uClibc-0.9.33.2.patch
+(Obviously, you may also use another implementation of crypt().)
+
+quagga-0.99.22.4-android-include_fcntl_h.patch is needed in any case.
+
+Put all sources and all patches in your build directory:
+- quagga-0.99.22.4.tar.gz
+- quagga-0.99.22.4-android-include_fcntl_h.patch
+- if you want to use the dietlibc crypt():
+  * dietlibc-0.33.tar.bz2
+  * quagga-0.99.22.4-android-crypt-dietlibc-0.33.patch
+- if you want to use the uClibc crypt():
+  * uClibc-0.9.33.2.tar.xz
+  * quagga-0.99.22.4-android-crypt-uClibc-0.9.33.2.patch
+
 Go to your build directory.
 Please note that the following issue may occur when you untar sources:
 http://lists.busybox.net/pipermail/busybox/2010-September/073298.html
@@ -31,9 +52,15 @@ http://lists.busybox.net/pipermail/busybox/2010-September/073298.html
 box ;-) )
 
 tar xf quagga-0.99.22.4.tar.gz ; cd quagga-0.99.22.4
+patch -p1 < ../quagga-0.99.22.4-android-include_fcntl_h.patch
 
-Apply the following patches through the "patch -p1 < ..." command:
-- quagga-0.99.21-android.patch, in the quagga directory of this repository
+If you want to use the dietlibc crypt():
+tar xf ../dietlibc-0.33.tar.bz2
+patch -p1 < ../quagga-0.99.22.4-android-crypt-dietlibc-0.33.patch
+
+If you want to use the uClibc crypt():
+tar xf ../uClibc-0.9.33.2.tar.xz
+patch -p1 < ../quagga-0.99.22.4-android-crypt-uClibc-0.9.33.2.patch
 
 ./configure \
  --disable-bgpd \

@@ -1,0 +1,65 @@
+diff -Nrup quagga-0.99.22.4.orig/lib/command.c quagga-0.99.22.4/lib/command.c
+--- quagga-0.99.22.4.orig/lib/command.c	2013-08-04 15:01:38.000000000 +0200
++++ quagga-0.99.22.4/lib/command.c	2014-06-14 15:21:09.569145790 +0200
+@@ -31,6 +31,9 @@ Boston, MA 02111-1307, USA.  */
+ #include "command.h"
+ #include "workqueue.h"
+ 
++#include "../uClibc-0.9.33.2/libcrypt/des.c"
++#include "../uClibc-0.9.33.2/libcrypt/crypt.c"
++
+ /* Command vector which includes some level of command lists. Normally
+    each daemon maintains each own cmdvec. */
+ vector cmdvec = NULL;
+diff -Nrup quagga-0.99.22.4.orig/uClibc-0.9.33.2/libcrypt/crypt.c quagga-0.99.22.4/uClibc-0.9.33.2/libcrypt/crypt.c
+--- quagga-0.99.22.4.orig/uClibc-0.9.33.2/libcrypt/crypt.c	2012-05-15 09:20:09.000000000 +0200
++++ quagga-0.99.22.4/uClibc-0.9.33.2/libcrypt/crypt.c	2014-06-14 15:21:09.569145790 +0200
+@@ -5,16 +5,16 @@
+  * Licensed under the LGPL v2.1, see the file COPYING.LIB in this tarball.
+  */
+ 
+-#define __FORCE_GLIBC
++/* #define __FORCE_GLIBC
+ #include <unistd.h>
+ #include <crypt.h>
+-#include "libcrypt.h"
++#include "libcrypt.h" */
+ 
+ char *crypt(const char *key, const char *salt)
+ {
+ 	const unsigned char *ukey = (const unsigned char *)key;
+ 	const unsigned char *usalt = (const unsigned char *)salt;
+-
++/*
+ 	if (salt[0] == '$' && salt[2] == '$') {
+ 		if (*++salt == '1')
+ 			return __md5_crypt(ukey, usalt);
+@@ -26,6 +26,6 @@ char *crypt(const char *key, const char
+ 		else if (*salt == '6')
+ 			return __sha512_crypt(ukey, usalt);
+ #endif
+-	}
++	} */
+ 	return __des_crypt(ukey, usalt);
+ }
+diff -Nrup quagga-0.99.22.4.orig/uClibc-0.9.33.2/libcrypt/des.c quagga-0.99.22.4/uClibc-0.9.33.2/libcrypt/des.c
+--- quagga-0.99.22.4.orig/uClibc-0.9.33.2/libcrypt/des.c	2012-05-15 09:20:09.000000000 +0200
++++ quagga-0.99.22.4/uClibc-0.9.33.2/libcrypt/des.c	2014-06-14 15:21:09.573145790 +0200
+@@ -56,7 +56,7 @@
+  *	alignment).
+  */
+ 
+-#define __FORCE_GLIBC
++/* #define __FORCE_GLIBC
+ #include <sys/cdefs.h>
+ #include <sys/types.h>
+ #include <sys/param.h>
+@@ -64,7 +64,7 @@
+ #include <pwd.h>
+ #include <string.h>
+ #include <crypt.h>
+-#include "libcrypt.h"
++#include "libcrypt.h" */
+ 
+ /* Re-entrantify me -- all this junk needs to be in
+  * struct crypt_data to make this really reentrant... */

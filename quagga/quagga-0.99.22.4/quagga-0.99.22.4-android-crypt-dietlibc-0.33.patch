@@ -1,0 +1,40 @@
+diff -Nrup quagga-0.99.22.4.orig/dietlibc-0.33/libcrypt/crypt.c quagga-0.99.22.4/dietlibc-0.33/libcrypt/crypt.c
+--- quagga-0.99.22.4.orig/dietlibc-0.33/libcrypt/crypt.c	2005-08-05 02:29:18.000000000 +0200
++++ quagga-0.99.22.4/dietlibc-0.33/libcrypt/crypt.c	2014-06-14 15:19:31.405141872 +0200
+@@ -1,6 +1,6 @@
+-#include "dietfeatures.h"
+-#include <unistd.h>
+-#include <md5.h>
++//#include "dietfeatures.h"
++//#include <unistd.h>
++//#include <md5.h>
+ 
+ /* Initial permutation, */
+ static const char IP[] = {
+@@ -256,10 +256,10 @@ char * crypt(const char *pw, const char
+ {
+   register int i, j, c;
+   static char block[66], iobuf[16];
+-#ifdef WANT_CRYPT_MD5
+-  if (salt[0]=='$' && salt[1]=='1' && salt[2]=='$')
+-    return md5crypt(pw,salt);
+-#endif
++//#ifdef WANT_CRYPT_MD5
++//  if (salt[0]=='$' && salt[1]=='1' && salt[2]=='$')
++//    return md5crypt(pw,salt);
++//#endif
+   for(i=0; i < 66; i++)
+     block[i] = 0;
+   for(i=0; (c= *pw) && i < 64; pw++) {
+diff -Nrup quagga-0.99.22.4.orig/lib/command.c quagga-0.99.22.4/lib/command.c
+--- quagga-0.99.22.4.orig/lib/command.c	2013-08-04 15:01:38.000000000 +0200
++++ quagga-0.99.22.4/lib/command.c	2014-06-14 15:19:31.405141872 +0200
+@@ -31,6 +31,8 @@ Boston, MA 02111-1307, USA.  */
+ #include "command.h"
+ #include "workqueue.h"
+ 
++#include "../dietlibc-0.33/libcrypt/crypt.c"
++
+ /* Command vector which includes some level of command lists. Normally
+    each daemon maintains each own cmdvec. */
+ vector cmdvec = NULL;

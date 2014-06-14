@@ -1,0 +1,12 @@
+diff -Nrup quagga-0.99.22.4.orig/lib/zebra.h quagga-0.99.22.4/lib/zebra.h
+--- quagga-0.99.22.4.orig/lib/zebra.h	2013-09-02 14:53:04.000000000 +0200
++++ quagga-0.99.22.4/lib/zebra.h	2014-06-14 15:17:36.545137289 +0200
+@@ -51,7 +51,7 @@ typedef int socklen_t;
+ #ifdef HAVE_STROPTS_H
+ #include <stropts.h>
+ #endif /* HAVE_STROPTS_H */
+-#include <sys/fcntl.h>
++#include <fcntl.h>
+ #ifdef HAVE_SYS_SELECT_H
+ #include <sys/select.h>
+ #endif /* HAVE_SYS_SELECT_H */
