@@ -1,0 +1,44 @@
+This patch avoids double new lines on the Quagga CLIs when you access them
+with a telnet client that uses CR LF as "end-of-line".
+AFAIK, by default, netkit-telnet-0.17, gnu-inetutils-telnet-1.9.2, and
+heimdal-telnet use CR NUL by default.  Hence, if you rely on defaults,
+you should not encounter any problem on GNU/Linux.
+However, try to "toggle crlf" on the abovementioned telnet clients, and you
+will understand what I mean as "double new lines on the Quagga CLIs" :-)
+Furthermore, the telnet applet available on Busybox just uses CR LF
+and does not provide any option to use CR NUL instead.
+Hence, as an example, this patch solves the "double new lines" annoyance
+when you access a Quagga CLI from an Android device using busybox telnet.
+Alternatively, you can patch Busybox (networking/telnet.c - search for
+a comment referencing "RFC 1123 3.3.1 Telnet End-of-Line Convention")
+to let it send CR NUL instead of CR LF (i.e. '\r' '\0' instead of '\r' '\n'),
+but this could also affect other uses of busybox telnet, and IMHO the comment
+to the original code provides a reasonable rationale for the choice
+of the CR LF sequence.
+
+To summarize:
+
+* IMHO, the right thing is patching Quagga to let it behave the same
+  with all "end-of-line" sequences a telnet client can send;
+
+* however, if you have to use busybox telnet to access a Quagga server
+  that can not be patched (e.g. a server managed by someone else) and/or
+  patching busybox telnet does not impair other uses of it, you may prefer
+  patching busybox and keeping quagga unchanged.
+
+diff -Nrup quagga-0.99.22.4.orig/lib/vty.c quagga-0.99.22.4/lib/vty.c
+--- quagga-0.99.22.4.orig/lib/vty.c	2013-08-04 15:01:38.000000000 +0200
++++ quagga-0.99.22.4/lib/vty.c	2014-06-14 20:22:50.606749121 +0200
+@@ -1507,6 +1507,12 @@ vty_read (struct thread *thread)
+ 	  break;
+ 	case '\n':
+ 	case '\r':
++	  /* To treat CR LF, CR NUL, and LF the same way
++	   * (see RFC 1123 3.3.1 Telnet End-of-Line Convention).
++	   * This also fixes the behavior of Quagga with busybox telnet. */
++	  if (buf[i] == '\r' && i < nbytes)
++	    if (buf[i+1] == '\n' || buf[i+1] == '\0')
++	      i++;
+ 	  vty_out (vty, "%s", VTY_NEWLINE);
+ 	  vty_execute (vty);
+ 	  break;

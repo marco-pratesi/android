@@ -35,9 +35,16 @@ To overcome this limitation of Bionic, you have some alternatives:
 
 quagga-0.99.22.4-android-include_fcntl_h.patch is needed in any case.
 
+I also suggest to apply quagga-0.99.22.4-fix_telnet_CRLF.patch to avoid
+double new lines on the Quagga CLIs when they are accessed through the
+telnet client provided by Busybox (read explanations included in the patch).
+
 Put all sources and all patches in your build directory:
 - quagga-0.99.22.4.tar.gz
 - quagga-0.99.22.4-android-include_fcntl_h.patch
+- quagga-0.99.22.4-fix_telnet_CRLF.patch
+- if you want to remove the usage of crypt():
+  quagga-0.99.22.4-android-crypt-remove.patch
 - if you want to use the dietlibc crypt():
   * dietlibc-0.33.tar.bz2
   * quagga-0.99.22.4-android-crypt-dietlibc-0.33.patch
@@ -53,6 +60,10 @@ box ;-) )
 
 tar xf quagga-0.99.22.4.tar.gz ; cd quagga-0.99.22.4
 patch -p1 < ../quagga-0.99.22.4-android-include_fcntl_h.patch
+patch -p1 < ../quagga-0.99.22.4-fix_telnet_CRLF.patch
+
+If you want to remove the usage of crypt():
+patch -p1 < ../quagga-0.99.22.4-android-crypt-remove.patch
 
 If you want to use the dietlibc crypt():
 tar xf ../dietlibc-0.33.tar.bz2
