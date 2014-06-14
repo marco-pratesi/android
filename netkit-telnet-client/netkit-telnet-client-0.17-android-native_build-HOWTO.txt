@@ -1,0 +1,20 @@
+
+This build is performed through a native GCC for Android:
+https://github.com/marco-pratesi/android/tree/master/gcc_and_friends
+
+Only the telnet client is build, the telnet daemon is not.
+
+Retrieve netkit-telnet_0.17.orig.tar.gz sources from Debian/Ubuntu GNU/Linux
+(or from wherever you prefer).
+Put the sources archive and netkit-telnet-0.17-android.patch in your
+build directory.
+Go to your build directory.
+
+tar xf netkit-telnet_0.17.orig.tar.gz ; cd netkit-telnet-0.17
+patch -p1 < ../netkit-telnet-0.17-android.patch
+cd telnet
+make
+strip telnet
+
+Put the executable in the directory you prefer, with the filename you prefer.
+
