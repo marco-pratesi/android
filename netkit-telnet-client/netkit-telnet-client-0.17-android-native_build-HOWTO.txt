@@ -2,10 +2,20 @@
 This build is performed through a native GCC for Android:
 https://github.com/marco-pratesi/android/tree/master/gcc_and_friends
 
-Only the telnet client is build, the telnet daemon is not.
+Only the telnet client is build, the telnet daemon is *not*.
 
-Retrieve netkit-telnet_0.17.orig.tar.gz sources from Debian/Ubuntu GNU/Linux
-(or from wherever you prefer).
+
+--------------------------------
+HOWTO build the original sources
+--------------------------------
+
+NOTE: a better result is obtained using the Debian/Ubuntu patches, too,
+as it is reported in the next section of this document.
+As an example, Debian/Ubuntu patches add IPv6 support.
+
+Retrieve netkit-telnet_0.17.orig.tar.gz sources either from Debian/Ubuntu
+GNU/Linux repositories, or from wherever you prefer; some download URLs
+are provided in the last section of this document.
 Put the sources archive and netkit-telnet-0.17-android.patch in your
 build directory.
 Go to your build directory.
@@ -17,4 +27,62 @@ make
 strip telnet
 
 Put the executable in the directory you prefer, with the filename you prefer.
+
+
+-------------------------------------------
+HOWTO build using the Debian/Ubuntu patches
+-------------------------------------------
+
+Put netkit-telnet-client-0.17.debian-android.patch in your build directory.
+Go to your build directory.
+Download netkit-telnet_0.17.orig.tar.gz and netkit-telnet_0.17-36.diff.gz
+(some URLs are provided in the last section of this document).
+
+gunzip netkit-telnet_0.17-36.diff.gz
+tar xf netkit-telnet_0.17.orig.tar.gz ; cd netkit-telnet-0.17
+patch -p1 < ../netkit-telnet_0.17-36.diff
+patch -p1 < ../netkit-telnet-client-0.17.debian-android.patch
+cd telnet
+make
+strip telnet
+
+Put the executable in the directory you prefer, with the filename you prefer.
+
+
+----------------------------------------------------------------
+Retrieval of sources and patches from Debian/Ubuntu repositories
+----------------------------------------------------------------
+
+Debian:
+https://packages.debian.org/wheezy/telnet =>
+http://ftp.debian.org/debian/pool/main/n/netkit-telnet/netkit-telnet_0.17-36.dsc
+http://ftp.debian.org/debian/pool/main/n/netkit-telnet/netkit-telnet_0.17.orig.tar.gz
+http://ftp.debian.org/debian/pool/main/n/netkit-telnet/netkit-telnet_0.17-36.diff.gz
+
+Ubuntu:
+http://packages.ubuntu.com/trusty/telnet =>
+http://archive.ubuntu.com/ubuntu/pool/main/n/netkit-telnet/netkit-telnet_0.17-36build2.dsc
+http://archive.ubuntu.com/ubuntu/pool/main/n/netkit-telnet/netkit-telnet_0.17.orig.tar.gz
+http://archive.ubuntu.com/ubuntu/pool/main/n/netkit-telnet/netkit-telnet_0.17-36build2.diff.gz
+or, alternatively,
+https://launchpad.net/ubuntu/+source/netkit-telnet =>
+https://launchpad.net/ubuntu/+source/netkit-telnet/0.17-36build2 =>
+https://launchpad.net/ubuntu/+archive/primary/+files/netkit-telnet_0.17-36build2.dsc
+https://launchpad.net/ubuntu/+archive/primary/+files/netkit-telnet_0.17.orig.tar.gz
+https://launchpad.net/ubuntu/+archive/primary/+files/netkit-telnet_0.17-36build2.diff.gz
+
+Debian and Ubuntu sources are just the same: even though the .diff.gz
+files may look different, if you apply them, you immediately realize
+that patched sources are identical for the two distributions.
+(The only difference is in netkit-telnet-0.17/debian/changelog, that reports
+the two most recent Ubuntu builds, i.e. 0.17-36build1 and 0.17-36build2.)
+
+NOTE: If you have a device running either the Debian Wheezy or the Ubuntu 14.04
+GNU/Linux distribution and you have properly set deb-src records in
+/etc/apt/sources.list, you may also automatically download and patch sources
+running either
+apt-get source telnet
+or
+apt-get source netkit-telnet
+(root privileges are *not* needed).
 

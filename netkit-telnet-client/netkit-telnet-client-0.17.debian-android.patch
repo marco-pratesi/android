@@ -1,0 +1,155 @@
+diff -Nrup netkit-telnet-0.17.debian/telnet/Makefile netkit-telnet-0.17/telnet/Makefile
+--- netkit-telnet-0.17.debian/telnet/Makefile	2014-06-15 09:53:34.416000000 +0200
++++ netkit-telnet-0.17/telnet/Makefile	2014-06-15 09:47:09.586000000 +0200
+@@ -1,13 +1,15 @@
+ all: telnet
+ 
+-include ../MCONFIG
+-include ../MRULES
++#include ../MCONFIG
++#include ../MRULES
+ 
+ #CXXFLAGS:=$(patsubst -O2, -g, $(CXXFLAGS))
+ 
++CXX ?= g++
+ # -DAUTHENTICATE
+-CXXFLAGS += -DUSE_TERMIO -DKLUDGELINEMODE
+-LIBS = $(LIBTERMCAP)
++CXXFLAGS += -DUSE_TERMIO -DKLUDGELINEMODE -trigraphs
++LIBS = -lncurses
++LDFLAGS += -static
+ 
+ SRCS = commands.cc main.cc network.cc ring.cc sys_bsd.cc telnet.cc \
+ 	terminal.cc tn3270.cc utilities.cc genget.cc environ.cc netlink.cc
+@@ -22,7 +24,7 @@ depend:
+ 	$(CXX) $(CXXFLAGS) -MM $(SRCS) >depend.mk
+ 
+ install: telnet
+-	install -m$(BINMODE) telnet $(INSTALLROOT)$(BINDIR)
++	install -s -m$(BINMODE) telnet $(INSTALLROOT)$(BINDIR)
+ 	install -m$(MANMODE) telnet.1 $(INSTALLROOT)$(MANDIR)/man1
+ 
+ clean:
+diff -Nrup netkit-telnet-0.17.debian/telnet/commands.cc netkit-telnet-0.17/telnet/commands.cc
+--- netkit-telnet-0.17.debian/telnet/commands.cc	2014-06-15 09:53:34.316000000 +0200
++++ netkit-telnet-0.17/telnet/commands.cc	2014-06-15 09:47:09.576000000 +0200
+@@ -64,6 +64,7 @@ char cmd_rcsid[] =
+ 
+ #include "ring.h"
+ 
++#define _POSIX_VDISABLE 1
+ #include "externs.h"
+ #include "defines.h"
+ #include "types.h"
+@@ -1341,8 +1342,8 @@ int shell(int argc, const char **) {
+ 
+ 	    shellp = getenv("SHELL");
+ 	    if (shellp == NULL)
+-		shellp = "/bin/sh";
+-	    if ((shellname = rindex(shellp, '/')) == 0)
++		shellp = "/system/bin/sh";
++	    if ((shellname = strrchr(shellp, '/')) == 0)
+ 		shellname = shellp;
+ 	    else
+ 		shellname++;
+diff -Nrup netkit-telnet-0.17.debian/telnet/environ.cc netkit-telnet-0.17/telnet/environ.cc
+--- netkit-telnet-0.17.debian/telnet/environ.cc	2000-07-23 05:24:53.000000000 +0200
++++ netkit-telnet-0.17/telnet/environ.cc	2014-06-15 09:47:09.586000000 +0200
+@@ -5,6 +5,7 @@
+ #include <arpa/telnet.h>
+ #include "ring.h"
+ #include "defines.h"
++#define _POSIX_VDISABLE 1
+ #include "externs.h"
+ #include "environ.h"
+ #include "array.h"
+diff -Nrup netkit-telnet-0.17.debian/telnet/main.cc netkit-telnet-0.17/telnet/main.cc
+--- netkit-telnet-0.17.debian/telnet/main.cc	2014-06-15 09:53:34.086000000 +0200
++++ netkit-telnet-0.17/telnet/main.cc	2014-06-15 09:47:09.586000000 +0200
+@@ -51,6 +51,7 @@ char main_rcsid[] =
+ #include <errno.h>
+ 
+ #include "ring.h"
++#define _POSIX_VDISABLE 1
+ #include "externs.h"
+ #include "defines.h"
+ #include "proto.h"
+diff -Nrup netkit-telnet-0.17.debian/telnet/network.cc netkit-telnet-0.17/telnet/network.cc
+--- netkit-telnet-0.17.debian/telnet/network.cc	2014-06-15 09:53:34.106000000 +0200
++++ netkit-telnet-0.17/telnet/network.cc	2014-06-15 09:47:09.596000000 +0200
+@@ -46,6 +46,7 @@ char net_rcsid[] =
+ 
+ #include "ring.h"
+ #include "defines.h"
++#define _POSIX_VDISABLE 1
+ #include "externs.h"
+ #include "proto.h"
+ #include "netlink.h"
+diff -Nrup netkit-telnet-0.17.debian/telnet/sys_bsd.cc netkit-telnet-0.17/telnet/sys_bsd.cc
+--- netkit-telnet-0.17.debian/telnet/sys_bsd.cc	2014-06-15 09:53:34.126000000 +0200
++++ netkit-telnet-0.17/telnet/sys_bsd.cc	2014-06-15 09:47:09.596000000 +0200
+@@ -56,6 +56,7 @@ char bsd_rcsid[] =
+ #include "ring.h"
+ 
+ #include "defines.h"
++#define _POSIX_VDISABLE 1
+ #include "externs.h"
+ #include "types.h"
+ #include "proto.h"
+diff -Nrup netkit-telnet-0.17.debian/telnet/telnet.cc netkit-telnet-0.17/telnet/telnet.cc
+--- netkit-telnet-0.17.debian/telnet/telnet.cc	2014-06-15 09:53:34.416000000 +0200
++++ netkit-telnet-0.17/telnet/telnet.cc	2014-06-15 09:50:21.816000000 +0200
+@@ -49,6 +49,7 @@ char telnet_rcsid[] =
+ 
+ #include "ring.h"
+ #include "defines.h"
++#define _POSIX_VDISABLE 1
+ #include "externs.h"
+ #include "types.h"
+ #include "environ.h"
+@@ -61,10 +62,10 @@ char telnet_rcsid[] =
+  * Due to lossage in some linux distributions/kernel releases/libc versions
+  * this must come *after* termios.h (which is included in externs.h)
+  */
+-#include <termcap.h>
++#include <ncurses/termcap.h>
+ 
+ #ifdef USE_NCURSES
+-#include <term.h>
++#include <ncurses/term.h>
+ #endif
+ 
+ 
+diff -Nrup netkit-telnet-0.17.debian/telnet/terminal.cc netkit-telnet-0.17/telnet/terminal.cc
+--- netkit-telnet-0.17.debian/telnet/terminal.cc	2014-06-15 09:53:34.206000000 +0200
++++ netkit-telnet-0.17/telnet/terminal.cc	2014-06-15 09:47:09.606000000 +0200
+@@ -50,6 +50,7 @@ char terminal_rcsid[] =
+ 
+ #include "ring.h"
+ #include "defines.h"
++#define _POSIX_VDISABLE 1
+ #include "externs.h"
+ #include "types.h"
+ #include "proto.h"
+diff -Nrup netkit-telnet-0.17.debian/telnet/tn3270.cc netkit-telnet-0.17/telnet/tn3270.cc
+--- netkit-telnet-0.17.debian/telnet/tn3270.cc	1996-08-13 11:08:34.000000000 +0200
++++ netkit-telnet-0.17/telnet/tn3270.cc	2014-06-15 09:47:09.616000000 +0200
+@@ -42,6 +42,7 @@ char tn3270_rcsid[] =
+ 
+ #include "defines.h"
+ #include "ring.h"
++#define _POSIX_VDISABLE 1
+ #include "externs.h"
+ #include "proto.h"
+ 
+diff -Nrup netkit-telnet-0.17.debian/telnet/utilities.cc netkit-telnet-0.17/telnet/utilities.cc
+--- netkit-telnet-0.17.debian/telnet/utilities.cc	2014-06-15 09:53:34.206000000 +0200
++++ netkit-telnet-0.17/telnet/utilities.cc	2014-06-15 09:47:09.616000000 +0200
+@@ -52,6 +52,7 @@ char util_rcsid[] =
+ 
+ #include "ring.h"
+ #include "defines.h"
++#define _POSIX_VDISABLE 1
+ #include "externs.h"
+ #include "proto.h"
+ #include "terminal.h"
