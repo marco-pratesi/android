@@ -15,6 +15,8 @@ to let it send CR NUL instead of CR LF (i.e. '\r' '\0' instead of '\r' '\n'),
 but this could also affect other uses of busybox telnet, and IMHO the comment
 to the original code provides a reasonable rationale for the choice
 of the CR LF sequence.
+On Android, a further option consists of using the netkit-telnet-0.17 client:
+it can be built as explained in the corresponding directory of this repository.
 
 To summarize:
 
