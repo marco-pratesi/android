@@ -1,6 +1,6 @@
-diff -rup netkit-telnet-0.17.orig/telnet/Makefile netkit-telnet-0.17/telnet/Makefile
+diff -Nrup netkit-telnet-0.17.orig/telnet/Makefile netkit-telnet-0.17/telnet/Makefile
 --- netkit-telnet-0.17.orig/telnet/Makefile	1999-08-01 07:06:37.000000000 +0200
-+++ netkit-telnet-0.17/telnet/Makefile	2014-06-15 00:20:12.060006042 +0200
++++ netkit-telnet-0.17/telnet/Makefile	2014-06-15 09:32:50.136000000 +0200
 @@ -1,13 +1,15 @@
  all: telnet
  
@@ -16,14 +16,14 @@ diff -rup netkit-telnet-0.17.orig/telnet/Makefile netkit-telnet-0.17/telnet/Make
 -CXXFLAGS += -DUSE_TERMIO -DKLUDGELINEMODE
 -LIBS += $(LIBTERMCAP)
 +CXXFLAGS += -DUSE_TERMIO -DKLUDGELINEMODE -trigraphs
-+LIBS += -lncurses
++LIBS = -lncurses
 +LDFLAGS += -static
  
  SRCS = commands.cc main.cc network.cc ring.cc sys_bsd.cc telnet.cc \
  	terminal.cc tn3270.cc utilities.cc genget.cc environ.cc netlink.cc
-diff -rup netkit-telnet-0.17.orig/telnet/commands.cc netkit-telnet-0.17/telnet/commands.cc
+diff -Nrup netkit-telnet-0.17.orig/telnet/commands.cc netkit-telnet-0.17/telnet/commands.cc
 --- netkit-telnet-0.17.orig/telnet/commands.cc	2000-07-23 06:16:24.000000000 +0200
-+++ netkit-telnet-0.17/telnet/commands.cc	2014-06-15 00:14:54.440007013 +0200
++++ netkit-telnet-0.17/telnet/commands.cc	2014-06-15 09:29:38.336000000 +0200
 @@ -64,6 +64,7 @@ char cmd_rcsid[] =
  
  #include "ring.h"
@@ -52,9 +52,9 @@ diff -rup netkit-telnet-0.17.orig/telnet/commands.cc netkit-telnet-0.17/telnet/c
  		shellname = shellp;
  	    else
  		shellname++;
-diff -rup netkit-telnet-0.17.orig/telnet/environ.cc netkit-telnet-0.17/telnet/environ.cc
+diff -Nrup netkit-telnet-0.17.orig/telnet/environ.cc netkit-telnet-0.17/telnet/environ.cc
 --- netkit-telnet-0.17.orig/telnet/environ.cc	2000-07-23 05:24:53.000000000 +0200
-+++ netkit-telnet-0.17/telnet/environ.cc	2014-06-14 23:37:58.610003410 +0200
++++ netkit-telnet-0.17/telnet/environ.cc	2014-06-15 09:20:10.656000000 +0200
 @@ -5,6 +5,7 @@
  #include <arpa/telnet.h>
  #include "ring.h"
@@ -63,9 +63,9 @@ diff -rup netkit-telnet-0.17.orig/telnet/environ.cc netkit-telnet-0.17/telnet/en
  #include "externs.h"
  #include "environ.h"
  #include "array.h"
-diff -rup netkit-telnet-0.17.orig/telnet/main.cc netkit-telnet-0.17/telnet/main.cc
+diff -Nrup netkit-telnet-0.17.orig/telnet/main.cc netkit-telnet-0.17/telnet/main.cc
 --- netkit-telnet-0.17.orig/telnet/main.cc	1999-08-01 07:06:37.000000000 +0200
-+++ netkit-telnet-0.17/telnet/main.cc	2014-06-14 23:32:26.450005271 +0200
++++ netkit-telnet-0.17/telnet/main.cc	2014-06-15 09:20:10.656000000 +0200
 @@ -46,8 +46,10 @@ char main_rcsid[] =
  #include <sys/types.h>
  #include <getopt.h>
@@ -77,9 +77,9 @@ diff -rup netkit-telnet-0.17.orig/telnet/main.cc netkit-telnet-0.17/telnet/main.
  #include "externs.h"
  #include "defines.h"
  #include "proto.h"
-diff -rup netkit-telnet-0.17.orig/telnet/network.cc netkit-telnet-0.17/telnet/network.cc
+diff -Nrup netkit-telnet-0.17.orig/telnet/network.cc netkit-telnet-0.17/telnet/network.cc
 --- netkit-telnet-0.17.orig/telnet/network.cc	1996-08-13 10:09:58.000000000 +0200
-+++ netkit-telnet-0.17/telnet/network.cc	2014-06-14 23:33:32.520013081 +0200
++++ netkit-telnet-0.17/telnet/network.cc	2014-06-15 09:20:10.666000000 +0200
 @@ -42,9 +42,11 @@ char net_rcsid[] =
  #include <sys/time.h>
  #include <errno.h>
@@ -92,9 +92,9 @@ diff -rup netkit-telnet-0.17.orig/telnet/network.cc netkit-telnet-0.17/telnet/ne
  #include "externs.h"
  #include "proto.h"
  #include "netlink.h"
-diff -rup netkit-telnet-0.17.orig/telnet/sys_bsd.cc netkit-telnet-0.17/telnet/sys_bsd.cc
+diff -Nrup netkit-telnet-0.17.orig/telnet/sys_bsd.cc netkit-telnet-0.17/telnet/sys_bsd.cc
 --- netkit-telnet-0.17.orig/telnet/sys_bsd.cc	1999-09-28 18:29:24.000000000 +0200
-+++ netkit-telnet-0.17/telnet/sys_bsd.cc	2014-06-14 23:33:58.400001305 +0200
++++ netkit-telnet-0.17/telnet/sys_bsd.cc	2014-06-15 09:20:10.666000000 +0200
 @@ -56,6 +56,7 @@ char bsd_rcsid[] =
  #include "ring.h"
  
@@ -103,9 +103,9 @@ diff -rup netkit-telnet-0.17.orig/telnet/sys_bsd.cc netkit-telnet-0.17/telnet/sy
  #include "externs.h"
  #include "types.h"
  #include "proto.h"
-diff -rup netkit-telnet-0.17.orig/telnet/telnet.cc netkit-telnet-0.17/telnet/telnet.cc
+diff -Nrup netkit-telnet-0.17.orig/telnet/telnet.cc netkit-telnet-0.17/telnet/telnet.cc
 --- netkit-telnet-0.17.orig/telnet/telnet.cc	2000-07-23 05:24:53.000000000 +0200
-+++ netkit-telnet-0.17/telnet/telnet.cc	2014-06-15 00:00:12.700005943 +0200
++++ netkit-telnet-0.17/telnet/telnet.cc	2014-06-15 09:31:44.226000000 +0200
 @@ -49,6 +49,7 @@ char telnet_rcsid[] =
  
  #include "ring.h"
@@ -114,23 +114,22 @@ diff -rup netkit-telnet-0.17.orig/telnet/telnet.cc netkit-telnet-0.17/telnet/tel
  #include "externs.h"
  #include "types.h"
  #include "environ.h"
-@@ -61,10 +62,11 @@ char telnet_rcsid[] =
+@@ -61,10 +62,10 @@ char telnet_rcsid[] =
   * Due to lossage in some linux distributions/kernel releases/libc versions
   * this must come *after* termios.h (which is included in externs.h)
   */
 -#include <termcap.h>
 +#include <ncurses/termcap.h>
  
-+#define USE_NCURSES 1
  #ifdef USE_NCURSES
 -#include <term.h>
 +#include <ncurses/term.h>
  #endif
  
  
-diff -rup netkit-telnet-0.17.orig/telnet/terminal.cc netkit-telnet-0.17/telnet/terminal.cc
+diff -Nrup netkit-telnet-0.17.orig/telnet/terminal.cc netkit-telnet-0.17/telnet/terminal.cc
 --- netkit-telnet-0.17.orig/telnet/terminal.cc	1999-12-12 20:48:05.000000000 +0100
-+++ netkit-telnet-0.17/telnet/terminal.cc	2014-06-14 23:36:31.850005551 +0200
++++ netkit-telnet-0.17/telnet/terminal.cc	2014-06-15 09:30:25.086000000 +0200
 @@ -45,9 +45,11 @@ char terminal_rcsid[] =
  #include <signal.h>
  #include <errno.h>
@@ -161,9 +160,9 @@ diff -rup netkit-telnet-0.17.orig/telnet/terminal.cc netkit-telnet-0.17/telnet/t
  
  #ifdef	SIGTSTP
  	signal(SIGTSTP, SIG_DFL);
-diff -rup netkit-telnet-0.17.orig/telnet/tn3270.cc netkit-telnet-0.17/telnet/tn3270.cc
+diff -Nrup netkit-telnet-0.17.orig/telnet/tn3270.cc netkit-telnet-0.17/telnet/tn3270.cc
 --- netkit-telnet-0.17.orig/telnet/tn3270.cc	1996-08-13 11:08:34.000000000 +0200
-+++ netkit-telnet-0.17/telnet/tn3270.cc	2014-06-14 23:36:56.790009207 +0200
++++ netkit-telnet-0.17/telnet/tn3270.cc	2014-06-15 09:20:10.696000000 +0200
 @@ -42,6 +42,7 @@ char tn3270_rcsid[] =
  
  #include "defines.h"
@@ -172,9 +171,9 @@ diff -rup netkit-telnet-0.17.orig/telnet/tn3270.cc netkit-telnet-0.17/telnet/tn3
  #include "externs.h"
  #include "proto.h"
  
-diff -rup netkit-telnet-0.17.orig/telnet/utilities.cc netkit-telnet-0.17/telnet/utilities.cc
+diff -Nrup netkit-telnet-0.17.orig/telnet/utilities.cc netkit-telnet-0.17/telnet/utilities.cc
 --- netkit-telnet-0.17.orig/telnet/utilities.cc	1999-12-12 16:33:40.000000000 +0100
-+++ netkit-telnet-0.17/telnet/utilities.cc	2014-06-14 23:37:36.150005150 +0200
++++ netkit-telnet-0.17/telnet/utilities.cc	2014-06-15 09:20:10.706000000 +0200
 @@ -47,9 +47,11 @@ char util_rcsid[] =
  #include <sys/socket.h>
  #include <unistd.h>
