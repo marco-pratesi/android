@@ -16,7 +16,7 @@ diff -Nrup netkit-telnet-0.17.orig/telnet/Makefile netkit-telnet-0.17/telnet/Mak
 -CXXFLAGS += -DUSE_TERMIO -DKLUDGELINEMODE
 -LIBS += $(LIBTERMCAP)
 +CXXFLAGS += -DUSE_TERMIO -DKLUDGELINEMODE -trigraphs
-+LIBS = -lncurses
++LIBS += -lncurses
 +LDFLAGS += -static
  
  SRCS = commands.cc main.cc network.cc ring.cc sys_bsd.cc telnet.cc \
