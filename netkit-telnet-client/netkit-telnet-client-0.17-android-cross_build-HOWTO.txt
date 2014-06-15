@@ -1,0 +1,30 @@
+
+Set the needed environment variables as explained
+in 00_NOTES-env_for_cross_compiling.txt (in the root of the repository).
+
+NOTE: Only the telnet client is build, the telnet daemon is *not*.
+
+The ncurses library is needed, hence, according to the corresponding
+documentation in this repository:
+- on the build system, build ncurses, following instructions at least
+  until the "make install" step
+- on the target system, install the ncurses package
+
+To match directories where ncurses-5.9 has been "cross-installed"
+and to add some other needed options:
+export LIBS=-lgnustl_static
+export LDFLAGS="-L/system/lib -L$NDK_BASE/sources/cxx-stl/gnu-libstdc++/$GCC_VERSION/libs/armeabi"
+export CXXFLAGS="-I/foobar/include -I$NDK_BASE/sources/cxx-stl/gnu-libstdc++/$GCC_VERSION/include"
+
+Unpack and patch the source code just as explained in the companion HOWTO
+for the native build.
+
+cd telnet
+make
+$STRIP telnet
+
+Put the executable on the target device, in the directory you prefer,
+with the filename you prefer, paying attention to avoid overwriting other
+programs with the same filename (as an example, a busybox telnet applet may be
+already installed); remember to appropriately chown, chgrp, and chmod it.
+
