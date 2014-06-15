@@ -2,7 +2,7 @@
 This build is performed through a native GCC for Android:
 https://github.com/marco-pratesi/android/tree/master/gcc_and_friends
 
-Only the telnet client is build, the telnet daemon is *not*.
+NOTE: Only the telnet client is build, the telnet daemon is *not*.
 
 The ncurses library is needed.
 Hence, build and install ncurses following the corresponding documentation
