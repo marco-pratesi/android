@@ -1,0 +1,49 @@
+diff -Nrup bind9-9.9.5.dfsg.orig/bin/dig/dighost.c bind9-9.9.5.dfsg/bin/dig/dighost.c
+--- bind9-9.9.5.dfsg.orig/bin/dig/dighost.c	2014-01-27 19:58:24.000000000 +0100
++++ bind9-9.9.5.dfsg/bin/dig/dighost.c	2014-06-16 12:04:54.329085916 +0200
+@@ -100,6 +100,10 @@
+ 
+ #include <dig/dig.h>
+ 
++#if defined(__BIONIC__)
++#include <sys/system_properties.h>
++#endif
++
+ #if ! defined(NS_INADDRSZ)
+ #define NS_INADDRSZ	 4
+ #endif
+@@ -1210,6 +1214,9 @@ setup_system(void) {
+ 	dig_searchlist_t *domain = NULL;
+ 	lwres_result_t lwresult;
+ 	unsigned int lwresflags;
++#if defined(__BIONIC__)
++	char tmp[ISC_NETADDR_FORMATSIZE];
++#endif
+ 
+ 	debug("setup_system()");
+ 
+@@ -1253,7 +1260,12 @@ setup_system(void) {
+ 	/* If we don't find a nameserver fall back to localhost */
+ 	if (ISC_LIST_EMPTY(server_list)) {
+ 		if (have_ipv4) {
++#if defined(__BIONIC__)
++			__system_property_get("net.dns1", tmp);
++			lwresult = add_nameserver(lwconf, tmp, AF_INET);
++#else
+ 			lwresult = add_nameserver(lwconf, "127.0.0.1", AF_INET);
++#endif
+ 			if (lwresult != ISC_R_SUCCESS)
+ 				fatal("add_nameserver failed");
+ 		}
+diff -Nrup bind9-9.9.5.dfsg.orig/bin/named/unix/os.c bind9-9.9.5.dfsg/bin/named/unix/os.c
+--- bind9-9.9.5.dfsg.orig/bin/named/unix/os.c	2014-01-27 19:58:24.000000000 +0100
++++ bind9-9.9.5.dfsg/bin/named/unix/os.c	2014-06-16 12:04:46.937085621 +0200
+@@ -131,7 +131,7 @@ static isc_boolean_t non_root_caps = ISC
+  */
+ #define _LINUX_FS_H
+ #include <linux/capability.h>
+-#include <syscall.h>
++#include <sys/syscall.h>
+ #ifndef SYS_capset
+ #ifndef __NR_capset
+ #include <asm/unistd.h> /* Slackware 4.0 needs this. */
