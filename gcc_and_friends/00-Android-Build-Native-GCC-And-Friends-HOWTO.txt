@@ -104,31 +104,31 @@ patch -p1 < ../make-4.0-android.patch
 make ; make install
 cd ..
 
-In $TARGET_DIR/libexec/gcc/arm-linux-androideabi/4.6/install-tools/
+In $TARGET_DIR/libexec/gcc/$TARGET_ABI/4.6/install-tools/
 replace "/bin/sh" with "/system/bin/sh" (or, eventually, with bash,
 if it is available on the target device) in the first line
 of fixinc.sh, mkheaders, and mkinstalldirs
 
 Strip binaries to save disk space:
-( cd $TARGET_DIR/arm-linux-androideabi/bin ; $STRIP * )
+( cd $TARGET_DIR/$TARGET_ABI/bin ; $STRIP * )
 ( cd $TARGET_DIR/bin ; $STRIP * )
 ( for directory in lib lib/armv7-a lib/armv7-a/hard lib/armv7-a/thumb lib/armv7-a/thumb/hard lib/thumb ; \
   do cd $TARGET_DIR/$directory ; \
   $STRIP --strip-unneeded *.so *.so.* ; done )
-( cd $TARGET_DIR/libexec/gcc/arm-linux-androideabi/4.6 ; \
+( cd $TARGET_DIR/libexec/gcc/$TARGET_ABI/4.6 ; \
   $STRIP cc1 cc1plus collect2 lto1 lto-wrapper ; \
   $STRIP --strip-unneeded libfunction_reordering_plugin.so.0.0.0 liblto_plugin.so.0.0.0 )
-( cd $TARGET_DIR/libexec/gcc/arm-linux-androideabi/4.6/install-tools ; $STRIP fixincl )
+( cd $TARGET_DIR/libexec/gcc/$TARGET_ABI/4.6/install-tools ; $STRIP fixincl )
 
 You may want to replace some hard links with symbolic links.
 #Identical files can be found, as an example, with commands like
 #md5sum * | sort
 #sha256sum * | sort
-( cd $TARGET_DIR/arm-linux-androideabi/bin ; rm ld.bfd ; ln -s ld ld.bfd )
+( cd $TARGET_DIR/$TARGET_ABI/bin ; rm ld.bfd ; ln -s ld ld.bfd )
 ( cd $TARGET_DIR/bin ; \
-  for file in arm-linux-androideabi-c++ arm-linux-androideabi-g++ c++ ; \
+  for file in $TARGET_ABI-c++ $TARGET_ABI-g++ c++ ; \
   do rm $file ; ln -s g++ $file ; done ; \
-  for file in arm-linux-androideabi-gcc arm-linux-androideabi-gcc-4.6 ; \
+  for file in $TARGET_ABI-gcc $TARGET_ABI-gcc-4.6 ; \
   do rm $file ; ln -s gcc $file ; done ; \
   rm ld.bfd ; ln -s ld ld.bfd )
 
