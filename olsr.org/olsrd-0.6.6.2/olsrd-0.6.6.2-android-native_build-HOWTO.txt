@@ -47,4 +47,7 @@ strip --strip-unneeded `find . -name '*.so*'`
 make $BUILD_OPTIONS install
 make $BUILD_OPTIONS libs_install
 mkdir -p /data/local/var/run/olsrd  # my custom directory for the lockfile
+chmod 755 /data/local/var/run/olsrd
+
+Chmod /data/local/var/run and /data/local/var, too, if needed.
 
